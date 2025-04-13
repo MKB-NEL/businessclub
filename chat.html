@@ -29,7 +29,7 @@
             overflow: hidden;
         }
         
-        /* Custom scrollbar styles */
+        /* Custom scrollbar styles - Changed to blue */
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -41,13 +41,20 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
+            background: #1e88e5; /* Changed to blue */
             border-radius: 5px;
             border: 2px solid #f1f1f1;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: #0d47a1; /* Darker blue on hover */
+        }
+        
+        /* Scrollable containers */
+        .messages-container,
+        .emoji-container {
+            scrollbar-width: thin;
+            scrollbar-color: #1e88e5 #f1f1f1; /* Blue scrollbar for Firefox */
         }
         
         header {
