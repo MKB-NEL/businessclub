@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Members</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1e88e5;
+            margin-bottom: 20px;
+        }
+        
+        .role-section {
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .role-title {
+            color: #1e88e5;
+            border-bottom: 2px solid #1e88e5;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .member-card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #1e88e5;
+        }
+        
+        .member-card h3 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .member-card p {
+            margin: 3px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .instagram-link {
+            color: #1e88e5;
+            text-decoration: none;
+        }
+        
+        .instagram-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Business Club</h1>
+        
+        <div id="presidentsSection" class="role-section">
+            <h2 class="role-title">PRESIDENTS</h2>
+            <div class="members-grid" id="presidentsGrid"></div>
+        </div>
+        
+        <div id="advisorsSection" class="role-section">
+            <h2 class="role-title">ADVISORS</h2>
+            <div class="members-grid" id="advisorsGrid"></div>
+        </div>
+        
+        <div id="managersSection" class="role-section">
+            <h2 class="role-title">E-MANAGERS & SOCIAL MEDIA</h2>
+            <div class="members-grid" id="managersGrid"></div>
+        </div>
+        
+        <div id="accountantsSection" class="role-section">
+            <h2 class="role-title">ACCOUNTANTS & DEALERS</h2>
+            <div class="members-grid" id="accountantsGrid"></div>
+        </div>
+        
+        <div id="noneSection" class="role-section">
+            <h2 class="role-title">MEMBERS</h2>
+            <div class="members-grid" id="noneGrid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        // Check authentication status
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadMembers();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        async function loadMembers() {
+            const q = query(collection(db, "members"), orderBy("role"));
+            const querySnapshot = await getDocs(q);
+            
+            // Clear existing content
+            document.getElementById('presidentsGrid').innerHTML = '';
+            document.getElementById('advisorsGrid').innerHTML = '';
+            document.getElementById('managersGrid').innerHTML = '';
+            document.getElementById('accountantsGrid').innerHTML = '';
+            document.getElementById('noneGrid').innerHTML = '';
+            
+            querySnapshot.forEach((doc) => {
+                const member = doc.data();
+                renderMember(member);
+            });
+        }
+        
+        function renderMember(member) {
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            card.innerHTML = `
+                <h3>${member.name}</h3>
+                <p><strong>Role:</strong> ${member.role}</p>
+                <p><strong>Gender:</strong> ${member.gender}</p>
+                <p><strong>Instagram:</strong> 
+                    <a href="https://instagram.com/${member.instagram}" target="_blank" class="instagram-link">
+                        @${member.instagram}
+                    </a>
+                </p>
+            `;
+            
+            // Add to appropriate section based on role
+            if (member.role === 'President') {
+                document.getElementById('presidentsGrid').appendChild(card);
+            } else if (member.role === 'Advisor') {
+                document.getElementById('advisorsGrid').appendChild(card);
+            } else if (member.role === 'E Manager' || member.role === 'Social Media') {
+                document.getElementById('managersGrid').appendChild(card);
+            } else if (member.role === 'Accountant' || member.role === 'Dealer') {
+                document.getElementById('accountantsGrid').appendChild(card);
+            } else {
+                document.getElementById('noneGrid').appendChild(card);
+            }
+        }
+    </script>
+</body>
+</html>

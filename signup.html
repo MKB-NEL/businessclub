@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Request Access</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            font-size: 24px;
+            color: #1e88e5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .signup-box {
+            background-color: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            margin: 0 auto 20px;
+            font-size: 38px;
+            font-weight: 700;
+            color: #1e88e5;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+        }
+        
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .success-message {
+            color: #28a745;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(40, 167, 69, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">←</a>
+        
+        <div class="signup-box">
+            <div class="logo">Cliq</div>
+            
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Role in Business Club</label>
+                    <select id="role" required>
+                        <option value="">Select Role</option>
+                        <option value="None">None</option>
+                        <option value="President">President</option>
+                        <option value="Advisor">Advisor</option>
+                        <option value="E Manager">E Manager</option>
+                        <option value="Accountant">Accountant</option>
+                        <option value="Secretary">Secretary</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Discipliner">Discipliner</option>
+                        <option value="Dealer">Dealer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div style="display: flex; gap: 15px; margin-top: 5px;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="gender" value="Male" required> Male
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="gender" value="Female"> Female
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" min="16" max="99" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" minlength="6" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="instagram">Instagram Username</label>
+                    <input type="text" id="instagram" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="talent">Talent/Skills</label>
+                    <input type="text" id="talent" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" required>
+                </div>
+                
+                <button type="submit" id="submitBtn">Send Request</button>
+                
+                <div id="successMessage" class="success-message">
+                    Your application has been submitted. Please wait up to 24 hours for verification.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        const registrationForm = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        
+        registrationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                role: document.getElementById('role').value,
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                age: document.getElementById('age').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value,
+                instagram: document.getElementById('instagram').value,
+                talent: document.getElementById('talent').value,
+                address: document.getElementById('address').value,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                await addDoc(collection(db, "registrationRequests"), formData);
+                registrationForm.reset();
+                successMessage.style.display = 'block';
+                submitBtn.style.display = 'none';
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Request';
+            }
+        });
+    </script>
+</body>
+</html>

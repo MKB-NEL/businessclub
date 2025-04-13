@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Club - Sainte Marie Reine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        :root {
+            --primary-blue: #007BFF;
+            --dark-blue: #0056b3;
+            --light-blue: #e7f1ff;
+            --accent-gold: #FFD700;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--dark-blue);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero h1 {
+            font-weight: 800;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-btn {
+            background-color: white;
+            color: var(--primary-blue);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .hero-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        /* About Section */
+        .about-section {
+            padding: 80px 0;
+            background-color: var(--light-blue);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 40px;
+            color: var(--dark-blue);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent-gold);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Services Section */
+        .services-section {
+            padding: 80px 0;
+        }
+        
+        .service-card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 60px 0;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        /* Testimonials */
+        .testimonial-section {
+            padding: 80px 0;
+            background-color: #f9f9f9;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin: 15px;
+        }
+        
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.9)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-links h5 {
+            color: white;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .footer-links a {
+            color: #aaa;
+            display: block;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            text-decoration: none;
+            transform: translateX(5px);
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            color: var(--accent-gold);
+            transform: translateY(-3px);
+        }
+        
+        /* Animations */
+        .animate-delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .animate-delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .animate-delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        /* Floating elements */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-briefcase me-2"></i>Business Club
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="start.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="members.html">Members</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero text-center" id="home">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Empowering Future Business Leaders</h1>
+            <p class="animate__animated animate__fadeIn animate__delay-1s">Join College Sainte Marie Reine's premier business club to develop skills, network with professionals, and launch your career</p>
+            <a href="start.html" class="btn hero-btn animate__animated animate__fadeInUp animate__delay-2s">
+                Join Now <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section text-center" id="about">
+        <div class="container">
+            <h2 class="section-title animate__animated animate__fadeIn">About Our Club</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <p class="lead animate__animated animate__fadeIn animate__delay-1s">
+                        The Business Club at College Sainte Marie Reine is a dynamic community dedicated to fostering entrepreneurship, leadership, and professional development among students. Through workshops, networking events, and mentorship programs, we prepare members for success in the business world.
+                    </p>
+                    <div class="row mt-5">
+                        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-2s">
+                            <div class="p-4">
+                                <i class="fas fa-bullseye service-icon"></i>
+                                <h4>Our Mission</h4>
+                                <p>To develop business acumen and leadership skills in our members</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-3s">
+                            <div class="p-4">
+                                <i class="fas fa-eye service-icon"></i>
+                                <h4>Our Vision</h4>
+                                <p>To create the next generation of ethical business leaders</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 animate__animated animate__fadeInUp animate__delay-4s">
+                            <div class="p-4">
+                                <i class="fas fa-handshake service-icon"></i>
+                                <h4>Our Values</h4>
+                                <p>Integrity, Innovation, Collaboration, Excellence</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="container">
+            <h2 class="section-title text-center animate__animated animate__fadeIn">Our Programs</h2>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="card service-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-chalkboard-teacher service-icon"></i>
+                            <h3 class="mb-3">Workshops</h3>
+                            <p>Interactive sessions covering business fundamentals, case studies, and emerging trends led by industry professionals.</p>
+                            <a href="#" class="btn btn-outline-primary mt-3">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="card service-card">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-network-wired service-icon"></i>
+                            <h3 class="mb-3">Networking</h3>
+                            <p>Exclusive events connecting students with alumni, entrepreneurs, and corporate partners across various industries.</p>
+                            <a href="#" class="btn btn-outline-primary mt-3">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 animate__animated animate__fadeIn">
+                    <div class="p-4">
+                        <div class="stat-number">10+</div>
+                        <p>Members</p>
+                    </div>
+                </div>
+                <div class="col-md-3 animate__animated animate__fadeIn animate__delay-2s">
+                    <div class="p-4">
+                        <div class="stat-number">+1</div>
+                        <p>Partners</p>
+                    </div>
+                </div>
+                <div class="col-md-3 animate__animated animate__fadeIn animate__delay-3s">
+                    <div class="p-4">
+                        <div class="stat-number">2</div>
+                        <p>Months</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonial-section" id="testimonials">
+        <div class="container">
+            <h2 class="section-title text-center animate__animated animate__fadeIn">Success Stories</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="testimonial-card text-center">
+                                    <img src="image_" alt="Testimonial" class="testimonial-img">
+                                    <h4>IKUZWE CHANCE Jolie</h4>
+                                    <p class="text-muted">MRs PRESIDENT of Business Club</p>
+                                    <p>"The Business Club is a key to our success in financial profits and stats."</p>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="testimonial-card text-center">
+                                    <img src="image_" alt="Testimonial" class="testimonial-img">
+                                    <h4>RUSATIRA Shalom</h4>
+                                    <p class="text-muted">PRESIDENT</p>
+                                    <p>"Through the club's networking events, we are building Financial family for the success of all of us and you!"</p>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                            <i class="fas fa-chevron-left text-primary"></i>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                            <i class="fas fa-chevron-right text-primary"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="animate__animated animate__fadeInDown">Ready to Transform Your Future?</h2>
+            <p class="lead mb-4 animate__animated animate__fadeIn animate__delay-1s">Join our community of ambitious students and professionals today</p>
+            <a href="start.html" class="btn btn-light btn-lg animate__animated animate__fadeInUp animate__delay-2s">
+                Get Started <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5><i class="fas fa-briefcase me-2"></i>Business Club</h5>
+                    <p>Empowering the next generation of business leaders at Sainte Marie Reine.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+               
+            </div>
+            <hr class="mt-4" style="border-color: #444;">
+            <div class="text-center pt-3">
+                <p>&copy; 2025 Business Club | Designed by btem@fficial</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate__animated');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add(entry.target.dataset.animate);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animateElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

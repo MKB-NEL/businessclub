@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Profile</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e88e5;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #1e88e5;
+            text-decoration: none;
+        }
+        
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .profile-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #1e88e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .profile-email {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .profile-details {
+            margin-top: 20px;
+        }
+        
+        .detail-group {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #666;
+        }
+        
+        .detail-value {
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        
+        .edit-btn {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        .edit-form {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .save-btn {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+            font-weight: bold;
+        }
+        
+        .cancel-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer-icon {
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .footer-icon.active {
+            color: #1e88e5;
+        }
+        
+        #loadingIndicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid #1e88e5;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="home.html" class="back-btn">←</a>
+        <div class="logo">Cliq</div>
+        <div style="width: 24px;"></div> <!-- Spacer for alignment -->
+    </header>
+    
+    <main>
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">CL</div>
+                <div>
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-email" id="profileEmail">user@example.com</div>
+                </div>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            
+            <div class="profile-details" id="profileView">
+                <div class="detail-group">
+                    <span class="detail-label">Role</span>
+                    <div class="detail-value" id="profileRole">Loading...</div>
+                </div>
+                
+                <div class="detail-group">
+                    <span class="detail-label">Gender</span>
+                    <div class="detail-value" id="profileGender">Loading...</div>
+                </div>
+                
+                <div class="detail-group">
+                    <span class="detail-label">Age</span>
+                    <div class="detail-value" id="profileAge">Loading...</div>
+                </div>
+                
+                <div class="detail-group">
+                    <span class="detail-label">Phone</span>
+                    <div class="detail-value" id="profilePhone">Loading...</div>
+                </div>
+                
+                <div class="detail-group">
+                    <span class="detail-label">Instagram</span>
+                    <div class="detail-value" id="profileInstagram">Loading...</div>
+                </div>
+                
+                <div class="detail-group">
+                    <span class="detail-label">Talent</span>
+                    <div class="detail-value" id="profileTalent">Loading...</div>
+                </div>
+                
+                <div class="detail-group">
+                    <span class="detail-label">Address</span>
+                    <div class="detail-value" id="profileAddress">Loading...</div>
+                </div>
+                
+                <button class="edit-btn" id="editProfileBtn">Edit Profile</button>
+            </div>
+            
+            <div class="edit-form" id="profileEditForm">
+                <div class="form-group">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editRole">Role</label>
+                    <select id="editRole" required>
+                        <option value="None">None</option>
+                        <option value="President">President</option>
+                        <option value="Advisor">Advisor</option>
+                        <option value="E Manager">E Manager</option>
+                        <option value="Accountant">Accountant</option>
+                        <option value="Secretary">Secretary</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Discipliner">Discipliner</option>
+                        <option value="Dealer">Dealer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div style="display: flex; gap: 15px;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="editGender" value="Male" required> Male
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" name="editGender" value="Female"> Female
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editAge">Age</label>
+                    <input type="number" id="editAge" min="16" max="99" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editPhone">Phone</label>
+                    <input type="tel" id="editPhone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editInstagram">Instagram</label>
+                    <input type="text" id="editInstagram" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTalent">Talent</label>
+                    <input type="text" id="editTalent" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editAddress">Address</label>
+                    <textarea id="editAddress" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelEditBtn">Cancel</button>
+                    <button type="button" class="save-btn" id="saveProfileBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <a href="home.html" class="footer-icon">🏠</a>
+        <a href="search.html" class="footer-icon">🔍</a>
+        <a href="#" class="footer-icon">💼</a>
+        <a href="#" class="footer-icon">🔔</a>
+        <a href="profile.html" class="footer-icon active">👤</a>
+    </footer>
+
+    <div id="loadingIndicator">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+    </script>
+
+    <!-- Main Application Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const profileRole = document.getElementById('profileRole');
+        const profileGender = document.getElementById('profileGender');
+        const profileAge = document.getElementById('profileAge');
+        const profilePhone = document.getElementById('profilePhone');
+        const profileInstagram = document.getElementById('profileInstagram');
+        const profileTalent = document.getElementById('profileTalent');
+        const profileAddress = document.getElementById('profileAddress');
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const profileView = document.getElementById('profileView');
+        const profileEditForm = document.getElementById('profileEditForm');
+        const editName = document.getElementById('editName');
+        const editRole = document.getElementById('editRole');
+        const editAge = document.getElementById('editAge');
+        const editPhone = document.getElementById('editPhone');
+        const editInstagram = document.getElementById('editInstagram');
+        const editTalent = document.getElementById('editTalent');
+        const editAddress = document.getElementById('editAddress');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Global Variables
+        let currentUser = null;
+        let currentUserData = null;
+        let userDocId = null;
+
+        // Authentication State
+        onAuthStateChanged(auth, async (user) => {
+            showLoading(true);
+            if (user) {
+                currentUser = user;
+                try {
+                    await loadProfileData(user.email);
+                } catch (error) {
+                    showError('Failed to load profile data. Please try again.');
+                    console.error('Error loading profile:', error);
+                }
+            } else {
+                // Redirect to login page if not authenticated
+                window.location.href = 'start.html';
+            }
+            showLoading(false);
+        });
+
+        // Load profile data from Firestore
+        async function loadProfileData(email) {
+            try {
+                // Query the members collection for the user's document
+                const membersRef = collection(db, "members");
+                const q = query(membersRef, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    // Get the first document (should only be one per email)
+                    const doc = querySnapshot.docs[0];
+                    userDocId = doc.id;
+                    currentUserData = doc.data();
+                    
+                    // Update the UI with the profile data
+                    updateProfileUI();
+                } else {
+                    showError('Profile data not found. Please contact support.');
+                }
+            } catch (error) {
+                showError('Failed to load profile data. Please try again.');
+                console.error('Error loading profile:', error);
+                throw error;
+            }
+        }
+
+        // Update the profile UI with current data
+        function updateProfileUI() {
+            if (!currentUserData) return;
+            
+            // Basic info
+            const initials = currentUserData.name ? 
+                currentUserData.name.split(' ').map(n => n[0]).join('').toUpperCase() : 
+                currentUser.email.split('@')[0].substring(0, 2).toUpperCase();
+            profileAvatar.textContent = initials;
+            profileName.textContent = currentUserData.name || 'Not specified';
+            profileEmail.textContent = currentUserData.email || 'Not specified';
+            
+            // Details
+            profileRole.textContent = currentUserData.role || 'Not specified';
+            profileGender.textContent = currentUserData.gender || 'Not specified';
+            profileAge.textContent = currentUserData.age || 'Not specified';
+            profilePhone.textContent = currentUserData.phone || 'Not specified';
+            profileInstagram.textContent = currentUserData.instagram ? `@${currentUserData.instagram}` : 'Not specified';
+            profileTalent.textContent = currentUserData.talent || 'Not specified';
+            profileAddress.textContent = currentUserData.address || 'Not specified';
+            
+            // Populate edit form
+            editName.value = currentUserData.name || '';
+            editRole.value = currentUserData.role || 'None';
+            if (currentUserData.gender) {
+                document.querySelector(`input[name="editGender"][value="${currentUserData.gender}"]`).checked = true;
+            }
+            editAge.value = currentUserData.age || '';
+            editPhone.value = currentUserData.phone || '';
+            editInstagram.value = currentUserData.instagram || '';
+            editTalent.value = currentUserData.talent || '';
+            editAddress.value = currentUserData.address || '';
+        }
+
+        // Toggle between view and edit modes
+        editProfileBtn.addEventListener('click', () => {
+            profileView.style.display = 'none';
+            profileEditForm.style.display = 'block';
+        });
+
+        cancelEditBtn.addEventListener('click', () => {
+            profileView.style.display = 'block';
+            profileEditForm.style.display = 'none';
+        });
+
+        // Save profile changes
+        saveProfileBtn.addEventListener('click', async () => {
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+                hideError();
+                
+                const updatedData = {
+                    name: editName.value.trim(),
+                    role: editRole.value,
+                    gender: document.querySelector('input[name="editGender"]:checked')?.value || '',
+                    age: editAge.value.trim(),
+                    phone: editPhone.value.trim(),
+                    instagram: editInstagram.value.trim(),
+                    talent: editTalent.value.trim(),
+                    address: editAddress.value.trim(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Update the document in Firestore
+                await updateDoc(doc(db, "members", userDocId), updatedData);
+                
+                // Update local data and UI
+                currentUserData = { ...currentUserData, ...updatedData };
+                updateProfileUI();
+                
+                // Switch back to view mode
+                profileView.style.display = 'block';
+                profileEditForm.style.display = 'none';
+            } catch (error) {
+                showError('Failed to update profile. Please try again.');
+                console.error('Error updating profile:', error);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Form validation
+        function validateForm() {
+            if (!editName.value.trim()) {
+                showError('Name is required');
+                return false;
+            }
+            if (!document.querySelector('input[name="editGender"]:checked')) {
+                showError('Gender is required');
+                return false;
+            }
+            if (!editAge.value.trim()) {
+                showError('Age is required');
+                return false;
+            }
+            if (!editPhone.value.trim()) {
+                showError('Phone is required');
+                return false;
+            }
+            if (!editInstagram.value.trim()) {
+                showError('Instagram username is required');
+                return false;
+            }
+            if (!editTalent.value.trim()) {
+                showError('Talent is required');
+                return false;
+            }
+            if (!editAddress.value.trim()) {
+                showError('Address is required');
+                return false;
+            }
+            return true;
+        }
+
+        function showLoading(show) {
+            loadingIndicator.style.display = show ? 'flex' : 'none';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

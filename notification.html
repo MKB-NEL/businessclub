@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Notifications</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        /* Optimized CSS for fast rendering */
+        .notification-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        .notification {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .notification.unread {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .notification-time {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .notification-message {
+            margin: 10px 0;
+            color: #555;
+            word-break: break-word;
+        }
+        
+        .notification-media {
+            max-width: 100%;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: block;
+        }
+        
+        .notification-link {
+            display: inline-block;
+            padding: 8px 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .link-button {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .link-text {
+            color: #1a73e8;
+            text-decoration: underline;
+        }
+        
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+        
+        .skeleton-loader {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cliq | Notifications</div>
+        <div class="nav-icons">
+            <button class="logout-btn" id="logoutBtn">⇨</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="user-info" id="userInfo">
+            <div class="avatar" id="userAvatar">CL</div>
+            <div class="user-details">
+                <h2 id="userName">Loading...</h2>
+                <p id="userEmail">user@example.com</p>
+            </div>
+        </div>
+        
+        <div class="section-title">Your Notifications</div>
+        
+        <div class="notification-container" id="notificationsContainer">
+            <!-- Skeleton loading -->
+            <div class="skeleton-loader" style="height: 80px; width: 100%"></div>
+            <div class="skeleton-loader" style="height: 120px; width: 100%"></div>
+            <div class="skeleton-loader" style="height: 100px; width: 100%"></div>
+        </div>
+    </main>
+    
+    <footer>
+        <a href="home.html" class="footer-icon">🏠</a>
+        <a href="search.html" class="footer-icon">🔍</a>
+        <a href="image.html" class="footer-icon">📸</a>
+        <a href="notification.html" class="footer-icon active">🔔</a>
+        <a href="chat.html" class="footer-icon">📧</a>
+    </footer>
+
+    <!-- Firebase configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+    </script>
+
+    <!-- Optimized Firestore implementation -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            orderBy, 
+            onSnapshot,
+            limit,
+            updateDoc,
+            doc
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        // Initialize Firebase with performance monitoring
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // DOM elements
+        const notificationsContainer = document.getElementById('notificationsContainer');
+        let unsubscribeNotifications = null;
+
+        // Performance optimization variables
+        const batchSize = 10; // Load notifications in batches
+        let lastVisible = null;
+        let loading = false;
+        let allNotificationsLoaded = false;
+
+        // Load initial batch of notifications
+        async function loadInitialNotifications() {
+            if (loading) return;
+            loading = true;
+            
+            try {
+                const q = query(
+                    collection(db, "notifications"),
+                    orderBy("timestamp", "desc"),
+                    limit(batchSize)
+                );
+                
+                unsubscribeNotifications = onSnapshot(q, (snapshot) => {
+                    notificationsContainer.innerHTML = '';
+                    if (snapshot.empty) {
+                        showEmptyState();
+                        return;
+                    }
+                    
+                    snapshot.forEach((doc) => {
+                        renderNotification(doc.id, doc.data());
+                    });
+                    
+                    lastVisible = snapshot.docs[snapshot.docs.length-1];
+                    loading = false;
+                });
+                
+            } catch (error) {
+                console.error("Error loading notifications:", error);
+                showErrorState();
+                loading = false;
+            }
+        }
+
+        // Render a single notification
+        function renderNotification(id, notification) {
+            const element = document.createElement('div');
+            element.className = `notification ${notification.status === 'unread' ? 'unread' : ''}`;
+            element.setAttribute('data-id', id);
+            
+            // Convert timestamp
+            const timestamp = notification.timestamp?.toDate 
+                ? notification.timestamp.toDate() 
+                : new Date(notification.timestamp);
+            
+            // Build content based on type
+            let mediaContent = '';
+            if (notification.type === 'image' && notification.imageUrl) {
+                mediaContent = `
+                    <img src="${notification.imageUrl}" 
+                         class="notification-media" 
+                         alt="Notification"
+                         loading="lazy">
+                `;
+            } else if (notification.type === 'video' && notification.videoId) {
+                mediaContent = `
+                    <div class="notification-media">
+                        <iframe width="100%" height="315"
+                                src="https://www.youtube.com/embed/${notification.videoId}" 
+                                frameborder="0" 
+                                allowfullscreen
+                                loading="lazy">
+                        </iframe>
+                    </div>
+                `;
+            }
+            
+            // Build link if exists
+            let linkContent = '';
+            if (notification.type === 'link' && notification.linkUrl) {
+                const linkClass = notification.linkType === 'button' ? 'link-button' : 'link-text';
+                linkContent = `
+                    <a href="${notification.linkUrl}" 
+                       target="_blank" 
+                       class="notification-link ${linkClass}">
+                        ${notification.linkText || 'Click here'}
+                    </a>
+                `;
+            }
+            
+            element.innerHTML = `
+                <button class="mark-read" data-id="${id}">
+                    ${notification.status === 'read' ? '✓ Read' : 'Mark as read'}
+                </button>
+                <div class="notification-header">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-time">${formatTimeAgo(timestamp)}</div>
+                </div>
+                <div class="notification-message">${notification.message}</div>
+                ${mediaContent}
+                ${linkContent}
+            `;
+            
+            // Add click handler
+            element.querySelector('.mark-read').addEventListener('click', () => {
+                markAsRead(id);
+            });
+            
+            notificationsContainer.appendChild(element);
+        }
+
+        // Mark notification as read
+        async function markAsRead(id) {
+            try {
+                await updateDoc(doc(db, "notifications", id), {
+                    status: 'read',
+                    readAt: new Date()
+                });
+            } catch (error) {
+                console.error("Error marking as read:", error);
+            }
+        }
+
+        // Format time ago
+        function formatTimeAgo(date) {
+            const seconds = Math.floor((Date.now() - date) / 1000);
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+            
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
+                }
+            }
+            return seconds <= 5 ? 'just now' : `${Math.floor(seconds)} seconds ago`;
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            notificationsContainer.innerHTML = `
+                <div class="loading-indicator">
+                    No notifications yet
+                </div>
+            `;
+        }
+
+        // Show error state
+        function showErrorState() {
+            notificationsContainer.innerHTML = `
+                <div class="loading-indicator" style="color: #f44336;">
+                    Failed to load notifications. Please refresh.
+                </div>
+            `;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load notifications when user is authenticated
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    loadInitialNotifications();
+                    
+                    // Set user info
+                    document.getElementById('userAvatar').textContent = 
+                        (user.displayName || user.email.split('@')[0]).substring(0, 2).toUpperCase();
+                    document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+                    document.getElementById('userEmail').textContent = user.email;
+                } else {
+                    window.location.href = 'start.html';
+                }
+            });
+            
+            // Clean up on page unload
+            window.addEventListener('beforeunload', () => {
+                if (unsubscribeNotifications) {
+                    unsubscribeNotifications();
+                }
+            });
+        });
+
+        // Infinite scroll (load more when reaching bottom)
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && 
+                !loading && !allNotificationsLoaded) {
+                loadMoreNotifications();
+            }
+        });
+
+        // Load more notifications
+        async function loadMoreNotifications() {
+            if (loading || !lastVisible) return;
+            loading = true;
+            
+            try {
+                const nextQ = query(
+                    collection(db, "notifications"),
+                    orderBy("timestamp", "desc"),
+                    startAfter(lastVisible),
+                    limit(batchSize)
+                );
+                
+                const snapshot = await getDocs(nextQ);
+                if (snapshot.empty) {
+                    allNotificationsLoaded = true;
+                    return;
+                }
+                
+                snapshot.forEach((doc) => {
+                    renderNotification(doc.id, doc.data());
+                });
+                
+                lastVisible = snapshot.docs[snapshot.docs.length-1];
+            } catch (error) {
+                console.error("Error loading more notifications:", error);
+            } finally {
+                loading = false;
+            }
+        }
+    </script>
+</body>
+</html>

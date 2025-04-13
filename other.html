@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Admin Panel</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        /* Password Screen Styles */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .password-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .password-box h2 {
+            color: #1e88e5;
+            margin-bottom: 20px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* Admin Panel Styles */
+        .admin-container {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .admin-title {
+            color: #1e88e5;
+            font-size: 28px;
+        }
+        
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .admin-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .admin-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .admin-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .admin-link {
+            display: inline-block;
+            background: #1e88e5;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Screen -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-box">
+            <h2>Admin Authentication</h2>
+            <input type="password" class="password-input" id="adminPassword" placeholder="Enter Admin Password">
+            <button class="submit-btn" id="submitPassword">Submit</button>
+            <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+    
+    <!-- Admin Panel Content (hidden until password is entered) -->
+    <div class="admin-container" id="adminPanel">
+        <div class="admin-header">
+            <h1 class="admin-title">Admin Panel</h1>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        
+        <div class="admin-cards">
+            <div class="admin-card">
+                <h3>Member Approvals</h3>
+                <p>Review and approve new member applications</p>
+                <a href="approve.html" class="admin-link">Go to Approvals</a>
+            </div>
+            
+            <div class="admin-card">
+                <h3>Member Management</h3>
+                <p>View and manage all current members</p>
+                <a href="members.html" class="admin-link">View Members</a>
+            </div>
+            
+            <div class="admin-card">
+                <h3>Post Notifications</h3>
+                <p>post advertisement,education notifications accessible to every user.</p>
+                <a href="postnot.html" class="admin-link">Post Now</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password protection
+        const passwordScreen = document.getElementById('passwordScreen');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminPassword = document.getElementById('adminPassword');
+        const submitBtn = document.getElementById('submitPassword');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Check if already authenticated
+        if (localStorage.getItem('adminAuthenticated') === 'true') {
+            passwordScreen.style.display = 'none';
+            adminPanel.style.display = 'block';
+        }
+        
+        // Password submission
+        submitBtn.addEventListener('click', () => {
+            if (adminPassword.value === '@mkbertrand12') {
+                // Correct password
+                localStorage.setItem('adminAuthenticated', 'true');
+                passwordScreen.style.display = 'none';
+                adminPanel.style.display = 'block';
+            } else {
+                // Wrong password
+                errorMessage.style.display = 'block';
+                adminPassword.value = '';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+        
+        // Allow Enter key to submit
+        adminPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('adminAuthenticated');
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>

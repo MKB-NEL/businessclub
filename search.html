@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Private Member Search</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #fafafa;
+            color: #262626;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: white;
+            border-bottom: 1px solid #dbdbdb;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .search-container {
+            margin-top: 60px;
+            padding: 16px;
+            padding-bottom: 70px; /* Space for footer */
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+        }
+        
+        .search-results {
+            margin-top: 16px;
+        }
+        
+        .user-result {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #efefef;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .user-result:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .user-result:active {
+            background-color: #ebebeb;
+            transform: scale(0.98);
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .user-role {
+            color: #1e88e5;
+            font-size: 12px;
+            display: inline-block;
+            margin-left: 6px;
+            background-color: #e3f2fd;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .user-email {
+            color: #8e8e8e;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-detail {
+            font-size: 13px;
+            color: #666;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-detail svg {
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+            opacity: 0.7;
+        }
+        
+        .instagram-detail {
+            color: #e1306c;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 0;
+            color: #8e8e8e;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #8e8e8e;
+        }
+        
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid #dbdbdb;
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+        
+        .footer-icon {
+            color: #262626;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        
+        .footer-icon.active {
+            color: #1e88e5;
+        }
+        
+        /* Loading spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top: 4px solid #1e88e5;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        /* Highlight matching text */
+        .highlight {
+            background-color: #fff9c4;
+            font-weight: bold;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        /* Splash screen styles */
+        #chatSplash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1e88e5;
+            color: white;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-size: 24px;
+        }
+        
+        #chatSplash .splash-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Private chat indicator */
+        .private-indicator {
+            font-size: 12px;
+            color: #4caf50;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .private-indicator svg {
+            width: 12px;
+            height: 12px;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cliq | Search</div>
+    </header>
+    
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search members by name, email, role..." autocomplete="off">
+        <div class="search-results" id="searchResults">
+            <div class="no-results">Search for an approved member to talk to 1-1 and 🔒 end to end encrypted.</div>
+        </div>
+    </div>
+    
+    <!-- Chat Splash Screen -->
+    <div id="chatSplash">
+        <div class="splash-icon">🔒</div>
+        <div id="splashText">Creating private chat...</div>
+    </div>
+    
+    <footer>
+        <a href="home.html" class="footer-icon">🏠</a>
+        <a href="search.html" class="footer-icon active">🔍</a>
+        <a href="image.html" class="footer-icon">📸</a>
+        <a href="notification.html" class="footer-icon">🔔</a>
+        <a href="profile.html" class="footer-icon">📧</a>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.appspot.com",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
+    
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const chatSplash = document.getElementById('chatSplash');
+        const splashText = document.getElementById('splashText');
+        let searchTimeout = null;
+        let allMembers = [];
+    
+        // Check authentication state
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'start.html';
+            } else {
+                // Load all members when authenticated
+                await loadAllMembers();
+            }
+        });
+    
+        // Load all members from Firestore
+        async function loadAllMembers() {
+            try {
+                const membersRef = collection(firestore, 'members');
+                const querySnapshot = await getDocs(membersRef);
+                allMembers = [];
+                
+                querySnapshot.forEach(doc => {
+                    const memberData = doc.data();
+                    // Skip current user
+                    if (auth.currentUser && doc.id === auth.currentUser.uid) return;
+                    
+                    allMembers.push({
+                        id: doc.id,
+                        ...memberData,
+                        // Create searchable string for all fields
+                        searchContent: [
+                            memberData.name || '',
+                            memberData.email || '',
+                            memberData.role || '',
+                            memberData.instagram || '',
+                            memberData.talent || '',
+                            memberData.address || '',
+                            memberData.age || '',
+                            memberData.gender || '',
+                            memberData.phone || ''
+                        ].join(' ').toLowerCase()
+                    });
+                });
+                
+                console.log(`Loaded ${allMembers.length} members`);
+            } catch (error) {
+                console.error("Error loading members:", error);
+                showError("Failed to load members. Please refresh the page.");
+            }
+        }
+    
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            // Don't search for very short terms
+            if (searchTerm.length < 1) {
+                searchResults.innerHTML = '<div class="no-results">Start typing to search for members</div>';
+                return;
+            }
+            
+            // Show loading state
+            searchResults.innerHTML = '<div class="loading"><div class="spinner"></div>Searching members...</div>';
+            
+            // Debounce search by 300ms
+            searchTimeout = setTimeout(() => {
+                performSearch(searchTerm);
+            }, 300);
+        });
+    
+        // Perform the search on loaded members
+        function performSearch(searchTerm) {
+            try {
+                const searchTermLower = searchTerm.toLowerCase();
+                const results = [];
+                
+                allMembers.forEach(member => {
+                    // Check if search term exists in any field
+                    if (member.searchContent.includes(searchTermLower)) {
+                        // Calculate relevance score
+                        let score = 0;
+                        
+                        // Check each field for matches
+                        if (member.name && member.name.toLowerCase().includes(searchTermLower)) {
+                            score += member.name.toLowerCase() === searchTermLower ? 100 : 50;
+                        }
+                        if (member.email && member.email.toLowerCase().includes(searchTermLower)) {
+                            score += member.email.toLowerCase() === searchTermLower ? 80 : 30;
+                        }
+                        if (member.role && member.role.toLowerCase().includes(searchTermLower)) score += 20;
+                        if (member.talent && member.talent.toLowerCase().includes(searchTermLower)) score += 20;
+                        if (member.instagram && member.instagram.toLowerCase().includes(searchTermLower)) score += 15;
+                        if (member.address && member.address.toLowerCase().includes(searchTermLower)) score += 10;
+                        
+                        results.push({
+                            ...member,
+                            score: score,
+                            searchTerm: searchTermLower
+                        });
+                    }
+                });
+                
+                // Sort by relevance score
+                displayResults(results.sort((a, b) => b.score - a.score));
+            } catch (error) {
+                console.error("Search error:", error);
+                searchResults.innerHTML = '<div class="no-results">Error loading results</div>';
+            }
+        }
+    
+        // Display search results with highlighting
+        function displayResults(results) {
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">No members found matching your search</div>';
+                return;
+            }
+            
+            searchResults.innerHTML = '';
+            
+            results.forEach(member => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user-result';
+                
+                // Highlight matches in all fields
+                const highlightedName = highlightMatch(member.name, member.searchTerm);
+                const highlightedRole = highlightMatch(member.role, member.searchTerm);
+                
+                userElement.innerHTML = `
+                    <div class="user-avatar">${member.name?.charAt(0)?.toUpperCase() || '?'}</div>
+                    <div class="user-info">
+                        <div class="user-name">${highlightedName} <span class="user-role">${highlightedRole}</span></div>
+                        <div class="user-email">${member.email}</div>
+                        <div class="private-indicator">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a4 4 0 0 1 4 4v1h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V7a4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2v1h4V7a2 2 0 0 0-2-2z"/></svg>
+                            Private chat available
+                        </div>
+                    </div>
+                `;
+                
+                userElement.addEventListener('click', () => {
+                    showChatSplash(member);
+                });
+                
+                searchResults.appendChild(userElement);
+            });
+        }
+    
+        // Highlight matching text in results
+        function highlightMatch(text, searchTerm) {
+            if (!text || !searchTerm) return text;
+            
+            const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+    
+        // Escape special regex characters
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+    
+        // Show chat splash screen
+        function showChatSplash(member) {
+            splashText.textContent = `Creating private chat with ${member.name}`;
+            chatSplash.style.display = 'flex';
+            
+            // Redirect after 1.5 seconds
+            setTimeout(() => {
+                createPrivateChatRoom(member.id, member.name);
+            }, 1500);
+        }
+    
+        // Create private chat room
+        async function createPrivateChatRoom(targetUserId, targetName) {
+            try {
+                const currentUser = auth.currentUser;
+                if (!currentUser) {
+                    window.location.href = 'start.html';
+                    return;
+                }
+                
+                // Generate deterministic room ID (sorted user IDs)
+                const roomId = [currentUser.uid, targetUserId].sort().join('_');
+                
+                // Reference to the chat room
+                const chatRef = doc(firestore, 'privateChats', roomId);
+                
+                // Check if chat already exists
+                try {
+                    // Try to create the chat room (will fail if already exists)
+                    await setDoc(chatRef, {
+                        participants: {
+                            [currentUser.uid]: true,
+                            [targetUserId]: true
+                        },
+                        createdAt: serverTimestamp(),
+                        lastUpdated: serverTimestamp(),
+                        isPrivate: true
+                    }, { merge: true });
+                    
+                    console.log("Created new private chat room");
+                } catch (error) {
+                    console.log("Chat room already exists, proceeding...");
+                }
+                
+                // Store chat info for the chat page
+                sessionStorage.setItem('currentPrivateChat', JSON.stringify({
+                    roomId,
+                    targetUserId,
+                    targetName,
+                    currentUserId: currentUser.uid,
+                    isPrivate: true,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                // Redirect to private chat page
+                window.location.href = `private-chat.html?room=${roomId}`;
+            } catch (error) {
+                console.error("Error creating private chat:", error);
+                showError("Failed to create private chat. Please try again.");
+                chatSplash.style.display = 'none';
+            }
+        }
+    
+        // Show error message
+        function showError(message) {
+            searchResults.innerHTML = `<div class="no-results" style="color: #f44336;">${message}</div>`;
+        }
+    
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>

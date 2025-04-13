@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Approve Members</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1e88e5;
+            margin-bottom: 20px;
+        }
+        
+        .requests-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .request-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .request-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .request-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .approve-btn, .reject-btn, .save-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .approve-btn, .save-btn {
+            background: #1e88e5;
+            color: white;
+        }
+        
+        .reject-btn {
+            background: #f44336;
+            color: white;
+        }
+        
+        .editable {
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin: 2px 0;
+            border-radius: 4px;
+        }
+        
+        select.editable {
+            width: 100%;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Member Approval Requests</h1>
+        <div id="requestsContainer" class="requests-container"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            doc, 
+            updateDoc, 
+            deleteDoc,
+            getDoc,
+            addDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        const requestsContainer = document.getElementById('requestsContainer');
+        
+        async function loadRequests() {
+            const querySnapshot = await getDocs(collection(db, "registrationRequests"));
+            requestsContainer.innerHTML = '';
+            
+            querySnapshot.forEach((docSnapshot) => {
+                const data = docSnapshot.data();
+                if (data.status !== 'approved') {
+                    renderRequest(docSnapshot.id, data);
+                }
+            });
+        }
+        
+        function renderRequest(id, data) {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            card.innerHTML = `
+                <h3 contenteditable="true" class="editable">${data.name}</h3>
+                <p><strong>Role:</strong> 
+                    <select class="editable" id="role-${id}">
+                        <option value="None" ${data.role === 'None' ? 'selected' : ''}>None</option>
+                        <option value="President" ${data.role === 'President' ? 'selected' : ''}>President</option>
+                        <option value="Advisor" ${data.role === 'Advisor' ? 'selected' : ''}>Advisor</option>
+                        <option value="E Manager" ${data.role === 'E Manager' ? 'selected' : ''}>E Manager</option>
+                        <option value="Accountant" ${data.role === 'Accountant' ? 'selected' : ''}>Accountant</option>
+                        <option value="Secretary" ${data.role === 'Secretary' ? 'selected' : ''}>Secretary</option>
+                        <option value="Social Media" ${data.role === 'Social Media' ? 'selected' : ''}>Social Media</option>
+                        <option value="Discipliner" ${data.role === 'Discipliner' ? 'selected' : ''}>Discipliner</option>
+                        <option value="Dealer" ${data.role === 'Dealer' ? 'selected' : ''}>Dealer</option>
+                    </select>
+                </p>
+                <p><strong>Gender:</strong> 
+                    <select class="editable" id="gender-${id}">
+                        <option value="Male" ${data.gender === 'Male' ? 'selected' : ''}>Male</option>
+                        <option value="Female" ${data.gender === 'Female' ? 'selected' : ''}>Female</option>
+                    </select>
+                </p>
+                <p><strong>Age:</strong> <span contenteditable="true" class="editable">${data.age}</span></p>
+                <p><strong>Email:</strong> <span>${data.email}</span></p>
+                <p><strong>Phone:</strong> <span contenteditable="true" class="editable">${data.phone}</span></p>
+                <p><strong>Instagram:</strong> <span contenteditable="true" class="editable">${data.instagram}</span></p>
+                <p><strong>Talent:</strong> <span contenteditable="true" class="editable">${data.talent}</span></p>
+                <p><strong>Address:</strong> <span contenteditable="true" class="editable">${data.address}</span></p>
+                <div class="action-buttons">
+                    <button class="approve-btn" data-id="${id}">APPROVE</button>
+                    <button class="reject-btn" data-id="${id}">REJECT</button>
+                </div>
+            `;
+            
+            requestsContainer.appendChild(card);
+            
+            // Add event listeners
+            card.querySelector('.approve-btn').addEventListener('click', () => approveRequest(id, card));
+            card.querySelector('.reject-btn').addEventListener('click', () => rejectRequest(id));
+        }
+        
+        async function approveRequest(id, card) {
+            try {
+                // Get updated values from editable fields
+                const name = card.querySelector('h3').textContent;
+                const role = card.querySelector(`#role-${id}`).value;
+                const gender = card.querySelector(`#gender-${id}`).value;
+                const age = card.querySelector('p:nth-child(4) span').textContent;
+                const phone = card.querySelector('p:nth-child(6) span').textContent;
+                const instagram = card.querySelector('p:nth-child(7) span').textContent;
+                const talent = card.querySelector('p:nth-child(8) span').textContent;
+                const address = card.querySelector('p:nth-child(9) span').textContent;
+                
+                // Get the original request data
+                const requestRef = doc(db, "registrationRequests", id);
+                const requestDoc = await getDoc(requestRef);
+                const requestData = requestDoc.data();
+                
+                // Create user in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(
+                    auth, 
+                    requestData.email, 
+                    requestData.password
+                );
+                
+                // Add user to members collection
+                await addDoc(collection(db, "members"), {
+                    uid: userCredential.user.uid,
+                    name,
+                    role,
+                    gender,
+                    age,
+                    email: requestData.email,
+                    phone,
+                    instagram,
+                    talent,
+                    address,
+                    approvedAt: new Date().toISOString()
+                });
+                
+                // Update request status
+                await updateDoc(requestRef, {
+                    status: 'approved'
+                });
+                
+                // Remove card from UI
+                card.remove();
+                
+                alert('Member approved successfully!');
+            } catch (error) {
+                console.error("Error approving request: ", error);
+                alert('Error approving member: ' + error.message);
+            }
+        }
+        
+        async function rejectRequest(id) {
+            if (confirm('Are you sure you want to reject this application?')) {
+                try {
+                    await deleteDoc(doc(db, "registrationRequests", id));
+                    document.querySelector(`[data-id="${id}"]`).parentElement.parentElement.remove();
+                } catch (error) {
+                    console.error("Error rejecting request: ", error);
+                    alert('Error rejecting application');
+                }
+            }
+        }
+        
+        // Load requests on page load
+        loadRequests();
+    </script>
+</body>
+</html>

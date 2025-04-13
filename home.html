@@ -1,0 +1,2336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Home</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Business Club" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e88e5;
+        }
+        
+        .nav-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        #createPostBtn, .logout-btn {
+            font-size: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        main {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1e88e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .user-details h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .user-details p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stories {
+            display: flex;
+            padding: 10px;
+            background: white;
+            overflow-x: auto;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff9966, #ff5e62);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        
+        .story-avatar-inner {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .story-username {
+            font-size: 12px;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .add-story-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1e88e5;
+            cursor: pointer;
+        }
+        
+        .content-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid #1e88e5;
+            color: #1e88e5;
+            font-weight: bold;
+        }
+        
+        .feed {
+            padding: 15px;
+            display: block;
+        }
+        
+        .stories-grid {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .post {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            justify-content: space-between;
+        }
+        
+        .post-user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1e88e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .post-user {
+            font-weight: bold;
+        }
+        
+        .post-options {
+            position: relative;
+        }
+        
+        .post-options-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .post-options-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: none;
+        }
+        
+        .post-options-menu.show {
+            display: block;
+        }
+        
+        .post-option {
+            padding: 10px 15px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        
+        .post-option:hover {
+            background: #f5f5f5;
+        }
+        
+        .post-option.delete {
+            color: #f44336;
+        }
+        
+        .post-images-container {
+            position: relative;
+        }
+        
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .post-image.active {
+            display: block;
+        }
+        
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        
+        .carousel-btn {
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            gap: 5px;
+        }
+        
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+        }
+        
+        .carousel-dot.active {
+            background: #1e88e5;
+        }
+        
+        .post-actions {
+            display: flex;
+            padding: 10px;
+            gap: 15px;
+        }
+        
+        .post-action {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .post-action.liked {
+            color: red;
+        }
+        
+        .post-likes {
+            padding: 0 10px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .post-caption {
+            padding: 0 10px 10px;
+        }
+        
+        .username {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .post-time {
+            padding: 0 10px 10px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer-icon {
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .footer-icon.active {
+            color: #1e88e5;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            padding: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            min-height: 100px;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ddd;
+            padding: 30px;
+            text-align: center;
+            margin: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .file-upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload-text {
+            color: #666;
+        }
+        
+        .file-upload-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            width: calc(33.33% - 10px);
+            aspect-ratio: 1/1;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .remove-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .modal-actions {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn {
+            background: #f0f0f0;
+        }
+        
+        .post-btn {
+            background: #1e88e5;
+            color: white;
+        }
+        
+        .post-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Story Creation Modal */
+        .story-creation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .story-creation-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .story-upload-area {
+            border: 2px dashed #ccc;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .story-preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin: 0 auto;
+        }
+        
+        /* Fullscreen Story Viewer */
+        .story-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 1001;
+        }
+        
+        .story-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .story-progress-container {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            padding: 0 15px;
+        }
+        
+        .story-progress-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.4);
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        .story-progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+        }
+        
+        .story-user {
+            display: flex;
+            align-items: center;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .story-user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1e88e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .story-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .story-media {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .story-nav-left, .story-nav-right {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 30%;
+            z-index: 1;
+        }
+        
+        .story-nav-left {
+            left: 0;
+        }
+        
+        .story-nav-right {
+            right: 0;
+        }
+        
+        /* Loading Indicator */
+        #loadingIndicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid #1e88e5;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Story Grid Item */
+        .story-grid-item {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #1e88e5;
+        }
+        
+        .story-grid-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .story-grid-time {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        /* Comment Styles */
+        .comments-section {
+            padding: 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: 1px solid #eee;
+            margin-top: 5px;
+        }
+        
+        .comment {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1e88e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .comment-content {
+            flex: 1;
+        }
+        
+        .comment-user {
+            font-weight: bold;
+            font-size: 13px;
+            margin-right: 5px;
+        }
+        
+        .comment-text {
+            font-size: 14px;
+            word-break: break-word;
+        }
+        
+        .comment-time {
+            font-size: 10px;
+            color: #8e8e8e;
+            margin-top: 2px;
+        }
+        
+        .add-comment {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .comment-input {
+            flex: 1;
+            border: none;
+            padding: 8px;
+            outline: none;
+            resize: none;
+            max-height: 100px;
+            font-size: 14px;
+        }
+        
+        .post-comment-btn {
+            background: none;
+            border: none;
+            color: #1e88e5;
+            font-weight: bold;
+            padding: 8px;
+            cursor: pointer;
+        }
+        
+        .post-comment-btn:disabled {
+            color: #ccc;
+            cursor: default;
+        }
+        
+        .view-all-comments {
+            color: #8e8e8e;
+            font-size: 13px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        
+        /* Comment Modal */
+        .comment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .comment-modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .comment-modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-comment-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .comment-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .comment-modal-footer {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .emoji-picker-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            left: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            display: none;
+            z-index: 10;
+        }
+        
+        .emoji-picker.show {
+            display: block;
+        }
+        
+        .emoji-option {
+            font-size: 24px;
+            margin: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .no-comments {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cliq</div>
+        <div class="nav-icons">
+            <a href="profile.html" class="footer-con"><img src="https://i.ibb.co/7JZZrYdn/download-removebg-preview.png" width="40" height="40" /> </a>
+            <a href="#" id="createPostBtn"><img src="https://i.ibb.co/FLVwmJWr/Post-It-free-icons-designed-by-Pixel-perfect-removebg-preview.png" width="40" height="40" />  </a>
+            <button class="logout-btn" id="logoutBtn"><img src="https://i.ibb.co/MxHF1bSQ/flecha-circular-con-efecto-de-cola-flechas-circulares-actualizar-icono-de-concepto-de-actualizaci-n.png" width="40" height="40" /></button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="user-info" id="userInfo">
+            <div class="avatar" id="userAvatar">CL</div>
+            <div class="user-details">
+                <h2 id="userName">Loading...</h2>
+                <p id="userEmail">user@example.com</p>
+            </div>
+        </div>
+        
+        <div class="stories" id="storiesContainer">
+            <!-- Stories will be loaded here -->
+        </div>
+        
+        <div class="content-tabs">
+            <div class="tab active" data-tab="feed">Feed</div>
+            <div class="tab" data-tab="story">Story</div>
+        </div>
+        
+        <div class="feed" id="feed">
+            <div class="loading">Loading posts...</div>
+        </div>
+
+        <div class="stories-grid" id="storiesGridView">
+            <!-- Story grid will be loaded here -->
+        </div>
+    </main>
+    
+    <footer>
+        <a href="#" class="footer-icon">🏠</a>
+        <a href="#" class="footer-icon">🔍</a>
+        <a href="#" class="footer-icon">📸</a>
+        <a href="#" class="footer-icon">🔔</a>
+        <a href="#" class="footer-icon">📧</a>
+    </footer>
+
+    <!-- Create Post Modal -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Create New Post</div>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <form id="postForm">
+                <div class="form-group">
+                    <label for="postCaption">Caption</label>
+                    <textarea id="postCaption" placeholder="What's on your mind?"></textarea>
+                </div>
+                
+                <div class="file-upload" id="fileUpload">
+                    <input type="file" id="postImage" accept="image/*" multiple style="display: none;">
+                    <div class="file-upload-icon">📷</div>
+                    <div class="file-upload-text">Click to upload photos (up to 8)</div>
+                    <div class="file-upload-info" id="fileUploadInfo"></div>
+                    <div class="image-preview-container" id="imagePreviewContainer"></div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn cancel-btn" id="cancelPost">Cancel</button>
+                    <button type="submit" class="modal-btn post-btn" id="submitPost" disabled>Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Story Creation Modal -->
+    <div class="story-creation-modal" id="storyCreationModal">
+        <div class="story-creation-content">
+            <h3>Create New Story</h3>
+            <div class="story-upload-area" id="storyUploadArea">
+                <p>Click to upload photos (up to 5)</p>
+                <input type="file" id="storyFileInput" accept="image/*" multiple style="display: none;">
+                <img class="story-preview" id="storyPreview">
+                <div class="file-upload-info" id="storyUploadInfo"></div>
+                <div class="image-preview-container" id="storyPreviewContainer"></div>
+            </div>
+            <button id="postStoryBtn" disabled>Post Story</button>
+            <button id="cancelStoryBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Fullscreen Story Viewer -->
+    <div class="story-viewer" id="storyViewer">
+        <div class="story-progress-container" id="storyProgressContainer">
+            <!-- Progress bars will be added here -->
+        </div>
+        <div class="story-header">
+            <div class="story-user">
+                <div class="story-user-avatar" id="storyUserAvatar">U</div>
+                <span id="storyUsername">Username</span>
+            </div>
+            <button class="delete-story-btn" id="deleteStoryBtn" style="margin-left: auto; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 5px; padding: 5px 10px;">Delete</button>
+        </div>
+        <div class="story-content" id="storyFullscreenContent">
+            <!-- Story content will be displayed here -->
+        </div>
+        <div class="story-nav-left" id="storyNavLeft"></div>
+        <div class="story-nav-right" id="storyNavRight"></div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div class="comment-modal" id="commentModal">
+        <div class="comment-modal-content">
+            <div class="comment-modal-header">
+                <span>Comments</span>
+                <button class="close-comment-modal" id="closeCommentModal">&times;</button>
+            </div>
+            <div class="comment-modal-body" id="commentModalBody">
+                <!-- Comments will be loaded here -->
+            </div>
+            <div class="comment-modal-footer">
+                <div style="position: relative;">
+                    <button class="emoji-picker-btn" id="emojiPickerBtn">😀</button>
+                    <div class="emoji-picker" id="emojiPicker">
+                        <span class="emoji-option">❤️</span>
+                        <span class="emoji-option">😂</span>
+                        <span class="emoji-option">😍</span>
+                        <span class="emoji-option">🔥</span>
+                        <span class="emoji-option">👍</span>
+                        <span class="emoji-option">👎</span>
+                        <span class="emoji-option">🤬</span>
+                        <span class="emoji-option">🖕</span>
+                    </div>
+                </div>
+                <input type="text" class="comment-input" id="modalCommentInput" placeholder="Add a comment...">
+                <button class="post-comment-btn" id="postModalCommentBtn" disabled>Post</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+    </script>
+
+    <!-- Main Application Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getDatabase, ref, push, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const feed = document.getElementById('feed');
+        const storiesContainer = document.getElementById('storiesContainer');
+        const tabs = document.querySelectorAll('.tab');
+        const createPostBtn = document.getElementById('createPostBtn');
+        const postModal = document.getElementById('postModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelPost = document.getElementById('cancelPost');
+        const postForm = document.getElementById('postForm');
+        const postCaption = document.getElementById('postCaption');
+        const fileUpload = document.getElementById('fileUpload');
+        const postImage = document.getElementById('postImage');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const fileUploadInfo = document.getElementById('fileUploadInfo');
+        const submitPost = document.getElementById('submitPost');
+        const footerIcons = document.querySelectorAll('.footer-icon');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const storiesGridView = document.getElementById('storiesGridView');
+
+        // Comment Modal Elements
+        const commentModal = document.getElementById('commentModal');
+        const closeCommentModal = document.getElementById('closeCommentModal');
+        const commentModalBody = document.getElementById('commentModalBody');
+        const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+        const emojiPicker = document.getElementById('emojiPicker');
+        const modalCommentInput = document.getElementById('modalCommentInput');
+        const postModalCommentBtn = document.getElementById('postModalCommentBtn');
+
+        // Story Elements
+        const addStoryBtn = document.createElement('div');
+        addStoryBtn.className = 'add-story-btn';
+        addStoryBtn.innerHTML = '+';
+        storiesContainer.prepend(addStoryBtn);
+
+        const storyCreationModal = document.getElementById('storyCreationModal');
+        const storyUploadArea = document.getElementById('storyUploadArea');
+        const storyFileInput = document.getElementById('storyFileInput');
+        const storyPreview = document.getElementById('storyPreview');
+        const storyPreviewContainer = document.getElementById('storyPreviewContainer');
+        const storyUploadInfo = document.getElementById('storyUploadInfo');
+        const postStoryBtn = document.getElementById('postStoryBtn');
+        const cancelStoryBtn = document.getElementById('cancelStoryBtn');
+        const storyViewer = document.getElementById('storyViewer');
+        const storyProgressContainer = document.getElementById('storyProgressContainer');
+        const storyFullscreenContent = document.getElementById('storyFullscreenContent');
+        const storyUserAvatar = document.getElementById('storyUserAvatar');
+        const storyUsername = document.getElementById('storyUsername');
+        const storyNavLeft = document.getElementById('storyNavLeft');
+        const storyNavRight = document.getElementById('storyNavRight');
+        const deleteStoryBtn = document.getElementById('deleteStoryBtn');
+
+        // Global Variables
+        let currentUser = null;
+        let selectedImages = [];
+        let selectedStoryImages = [];
+        let currentStories = [];
+        let currentStoryIndex = 0;
+        let currentStoryItemIndex = 0;
+        let storyProgressInterval;
+        let currentPostId = null;
+        let currentViewingStoryId = null;
+        let currentCommentPostId = null;
+
+        // ======================
+        // CORE FUNCTIONALITY
+        // ======================
+
+        // Authentication State
+        onAuthStateChanged(auth, (user) => {
+            showLoading(true);
+            if (user) {
+                currentUser = user;
+                const displayName = user.displayName || user.email.split('@')[0];
+                const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+                
+                userAvatar.textContent = initials;
+                userName.textContent = displayName;
+                userEmail.textContent = user.email;
+                
+                loadFeedContent();
+                loadStories();
+                updateActiveTab();
+            } else {
+                window.location.href = 'start.html';
+            }
+            showLoading(false);
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            showLoading(true);
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert(`Logout failed: ${error.message}`);
+            }
+            showLoading(false);
+        });
+
+        // Tab Switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'feed') {
+                    loadFeedContent();
+                    feed.style.display = 'block';
+                    storiesGridView.style.display = 'none';
+                } else {
+                    loadStoriesGrid();
+                    feed.style.display = 'none';
+                    storiesGridView.style.display = 'grid';
+                }
+            });
+        });
+
+        // ======================
+        // POST FUNCTIONALITY
+        // ======================
+
+        // Create Post Modal
+        createPostBtn.addEventListener('click', () => {
+            if (!auth.currentUser) {
+                alert('Please log in to create a post');
+                window.location.href = 'start.html';
+                return;
+            }
+            postModal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', () => {
+            postModal.style.display = 'none';
+            resetPostForm();
+        });
+
+        cancelPost.addEventListener('click', () => {
+            postModal.style.display = 'none';
+            resetPostForm();
+        });
+
+        fileUpload.addEventListener('click', () => postImage.click());
+
+        // Multiple image upload for posts
+        postImage.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            
+            // Limit to 8 images
+            if (files.length > 8) {
+                alert('You can upload a maximum of 8 images');
+                e.target.value = '';
+                return;
+            }
+            
+            // Clear previous selections
+            selectedImages = [];
+            imagePreviewContainer.innerHTML = '';
+            
+            if (files.length > 0) {
+                files.forEach((file, index) => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            selectedImages.push({
+                                file: file,
+                                url: event.target.result
+                            });
+                            
+                            // Create preview item
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'image-preview-item';
+                            previewItem.innerHTML = `
+                                <img src="${event.target.result}" class="image-preview">
+                                <button class="remove-image-btn" data-index="${index}">×</button>
+                            `;
+                            imagePreviewContainer.appendChild(previewItem);
+                            
+                            // Add remove button event
+                            previewItem.querySelector('.remove-image-btn').addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                const indexToRemove = parseInt(e.target.dataset.index);
+                                selectedImages.splice(indexToRemove, 1);
+                                updateImagePreviews();
+                            });
+                            
+                            // Update file info
+                            fileUploadInfo.textContent = `${selectedImages.length} image(s) selected`;
+                            
+                            // Enable submit button if we have at least one image
+                            if (selectedImages.length > 0) {
+                                submitPost.disabled = false;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            } else {
+                fileUploadInfo.textContent = '';
+                submitPost.disabled = true;
+            }
+        });
+
+        function updateImagePreviews() {
+            imagePreviewContainer.innerHTML = '';
+            selectedImages.forEach((image, index) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                previewItem.innerHTML = `
+                    <img src="${image.url}" class="image-preview">
+                    <button class="remove-image-btn" data-index="${index}">×</button>
+                `;
+                imagePreviewContainer.appendChild(previewItem);
+                
+                // Re-add remove button event
+                previewItem.querySelector('.remove-image-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const indexToRemove = parseInt(e.target.dataset.index);
+                    selectedImages.splice(indexToRemove, 1);
+                    updateImagePreviews();
+                });
+            });
+            
+            fileUploadInfo.textContent = `${selectedImages.length} image(s) selected`;
+            submitPost.disabled = selectedImages.length === 0;
+        }
+
+        // Post Submission
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!auth.currentUser || selectedImages.length === 0) {
+                alert('You need to select at least one image to post');
+                return;
+            }
+            
+            const caption = postCaption.value.trim();
+            
+            submitPost.disabled = true;
+            submitPost.textContent = 'Posting...';
+            showLoading(true);
+            
+            try {
+                // Upload all images first
+                const uploadPromises = selectedImages.map(async (image) => {
+                    const formData = new FormData();
+                    formData.append('image', image.file);
+                    
+                    const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=240c62aba68e28dd92302da62466b5f8`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const imgbbData = await imgbbResponse.json();
+                    if (!imgbbData.success) throw new Error('Image upload failed');
+                    return imgbbData.data.url;
+                });
+
+                const imageUrls = await Promise.all(uploadPromises);
+
+                // Save to Firebase
+                const postData = {
+                    username: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                    userInitials: (auth.currentUser.displayName || auth.currentUser.email.split('@')[0])
+                        .split(' ').map(n => n[0]).join('').toUpperCase(),
+                    userId: auth.currentUser.uid,
+                    caption: caption,
+                    images: imageUrls,
+                    timestamp: Date.now(),
+                    likes: {},
+                    likeCount: 0,
+                    commentCount: 0
+                };
+                
+                const newPostRef = push(ref(database, 'posts'));
+                await set(newPostRef, postData);
+                
+                postModal.style.display = 'none';
+                resetPostForm();
+                
+            } catch (error) {
+                console.error('Post error:', error);
+                alert(`Failed to create post: ${error.message}`);
+            } finally {
+                submitPost.disabled = false;
+                submitPost.textContent = 'Post';
+                showLoading(false);
+            }
+        });
+
+        function resetPostForm() {
+            postForm.reset();
+            selectedImages = [];
+            imagePreviewContainer.innerHTML = '';
+            fileUploadInfo.textContent = '';
+            submitPost.disabled = true;
+        }
+
+        // ======================
+        // COMMENT FUNCTIONALITY
+        // ======================
+
+        // Open comment modal
+        function openCommentModal(postId) {
+            currentCommentPostId = postId;
+            commentModalBody.innerHTML = '<div class="loading">Loading comments...</div>';
+            commentModal.style.display = 'flex';
+            loadComments(postId);
+        }
+
+        // Close comment modal
+        closeCommentModal.addEventListener('click', () => {
+            commentModal.style.display = 'none';
+            modalCommentInput.value = '';
+            postModalCommentBtn.disabled = true;
+        });
+
+        // Load comments for modal
+        function loadComments(postId) {
+            const commentsRef = ref(database, `posts/${postId}/comments`);
+            onValue(commentsRef, (snapshot) => {
+                const comments = snapshot.val() || {};
+                renderComments(comments);
+            });
+        }
+
+        // Render comments in modal
+        function renderComments(comments) {
+            if (Object.keys(comments).length === 0) {
+                commentModalBody.innerHTML = '<div class="no-comments">No comments yet</div>';
+                return;
+            }
+            
+            commentModalBody.innerHTML = '';
+            
+            Object.values(comments)
+                .sort((a, b) => a.timestamp - b.timestamp)
+                .forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <div class="comment-avatar">${comment.userInitials}</div>
+                        <div class="comment-content">
+                            <span class="comment-user">${comment.username}</span>
+                            <span class="comment-text">${comment.text}</span>
+                            <div class="comment-time">${getTimeAgo(new Date(comment.timestamp))}</div>
+                        </div>
+                    `;
+                    commentModalBody.appendChild(commentElement);
+                });
+        }
+
+        // Modal comment input handling
+        modalCommentInput.addEventListener('input', () => {
+            postModalCommentBtn.disabled = modalCommentInput.value.trim() === '';
+        });
+
+        modalCommentInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!postModalCommentBtn.disabled) {
+                    addComment(currentCommentPostId, modalCommentInput.value.trim(), true);
+                    modalCommentInput.value = '';
+                    postModalCommentBtn.disabled = true;
+                }
+            }
+        });
+
+        postModalCommentBtn.addEventListener('click', () => {
+            if (modalCommentInput.value.trim()) {
+                addComment(currentCommentPostId, modalCommentInput.value.trim(), true);
+                modalCommentInput.value = '';
+                postModalCommentBtn.disabled = true;
+            }
+        });
+
+        // Emoji picker functionality
+        emojiPickerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            emojiPicker.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiPickerBtn) {
+                emojiPicker.classList.remove('show');
+            }
+        });
+
+        // Add emoji to input
+        emojiPicker.querySelectorAll('.emoji-option').forEach(emoji => {
+            emoji.addEventListener('click', (e) => {
+                const input = commentModal.querySelector('.comment-input');
+                input.value += e.target.textContent;
+                input.focus();
+                emojiPicker.classList.remove('show');
+            });
+        });
+
+        // Add comment to database
+        async function addComment(postId, text, isModal = false) {
+            if (!auth.currentUser || !text) return;
+            
+            const commentData = {
+                userId: auth.currentUser.uid,
+                username: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                userInitials: (auth.currentUser.displayName || auth.currentUser.email.split('@')[0])
+                    .split(' ').map(n => n[0]).join('').toUpperCase(),
+                text: text,
+                timestamp: Date.now()
+            };
+            
+            try {
+                const newCommentRef = push(ref(database, `posts/${postId}/comments`));
+                await set(newCommentRef, commentData);
+                
+                // Update comment count
+                const postRef = ref(database, `posts/${postId}`);
+                const postSnap = await get(postRef);
+                const currentCount = postSnap.val().commentCount || 0;
+                await update(postRef, { commentCount: currentCount + 1 });
+                
+                if (!isModal) {
+                    // Refresh the inline comments section
+                    const commentsSection = document.getElementById(`comments-${postId}`);
+                    if (commentsSection) {
+                        const commentsRef = ref(database, `posts/${postId}/comments`);
+                        onValue(commentsRef, (snapshot) => {
+                            const comments = snapshot.val() || {};
+                            renderInlineComments(postId, comments);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert('Failed to add comment');
+            }
+        }
+
+        // Render inline comments (shows 2 most recent)
+        function renderInlineComments(postId, comments) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            if (!commentsSection) return;
+            
+            const commentsArray = Object.values(comments)
+                .sort((a, b) => b.timestamp - a.timestamp);
+            
+            commentsSection.innerHTML = '';
+            
+            // Show only 2 most recent comments
+            commentsArray.slice(0, 2).forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                commentElement.innerHTML = `
+                    <div class="comment-avatar">${comment.userInitials}</div>
+                    <div class="comment-content">
+                        <span class="comment-user">${comment.username}</span>
+                        <span class="comment-text">${comment.text}</span>
+                        <div class="comment-time">${getTimeAgo(new Date(comment.timestamp))}</div>
+                    </div>
+                `;
+                commentsSection.appendChild(commentElement);
+            });
+            
+            // Add "view all" link if there are more comments
+            if (commentsArray.length > 2) {
+                const viewAllLink = document.createElement('div');
+                viewAllLink.className = 'view-all-comments';
+                viewAllLink.textContent = `View all ${commentsArray.length} comments`;
+                viewAllLink.dataset.postid = postId;
+                viewAllLink.addEventListener('click', (e) => {
+                    currentCommentPostId = e.target.dataset.postid;
+                    openCommentModal(currentCommentPostId);
+                });
+                commentsSection.appendChild(viewAllLink);
+            }
+        }
+
+        // ======================
+        // STORY FUNCTIONALITY
+        // ======================
+
+        // Story Creation
+        addStoryBtn.addEventListener('click', () => {
+            storyCreationModal.style.display = 'flex';
+        });
+
+        storyUploadArea.addEventListener('click', () => {
+            storyFileInput.click();
+        });
+
+        // Multiple image upload for stories (up to 5)
+        storyFileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            
+            // Limit to 5 images
+            if (files.length > 5) {
+                alert('You can upload a maximum of 5 images for stories');
+                e.target.value = '';
+                return;
+            }
+            
+            // Clear previous selections
+            selectedStoryImages = [];
+            storyPreviewContainer.innerHTML = '';
+            
+            if (files.length > 0) {
+                files.forEach((file, index) => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            selectedStoryImages.push({
+                                file: file,
+                                url: event.target.result
+                            });
+                            
+                            // Create preview item
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'image-preview-item';
+                            previewItem.innerHTML = `
+                                <img src="${event.target.result}" class="image-preview">
+                                <button class="remove-image-btn" data-index="${index}">×</button>
+                            `;
+                            storyPreviewContainer.appendChild(previewItem);
+                            
+                            // Add remove button event
+                            previewItem.querySelector('.remove-image-btn').addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                const indexToRemove = parseInt(e.target.dataset.index);
+                                selectedStoryImages.splice(indexToRemove, 1);
+                                updateStoryImagePreviews();
+                            });
+                            
+                            // Update file info
+                            storyUploadInfo.textContent = `${selectedStoryImages.length} image(s) selected`;
+                            
+                            // Enable submit button if we have at least one image
+                            if (selectedStoryImages.length > 0) {
+                                postStoryBtn.disabled = false;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            } else {
+                storyUploadInfo.textContent = '';
+                postStoryBtn.disabled = true;
+            }
+        });
+
+        function updateStoryImagePreviews() {
+            storyPreviewContainer.innerHTML = '';
+            selectedStoryImages.forEach((image, index) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                previewItem.innerHTML = `
+                    <img src="${image.url}" class="image-preview">
+                    <button class="remove-image-btn" data-index="${index}">×</button>
+                `;
+                storyPreviewContainer.appendChild(previewItem);
+                
+                // Re-add remove button event
+                previewItem.querySelector('.remove-image-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const indexToRemove = parseInt(e.target.dataset.index);
+                    selectedStoryImages.splice(indexToRemove, 1);
+                    updateStoryImagePreviews();
+                });
+            });
+            
+            storyUploadInfo.textContent = `${selectedStoryImages.length} image(s) selected`;
+            postStoryBtn.disabled = selectedStoryImages.length === 0;
+        }
+
+        postStoryBtn.addEventListener('click', async () => {
+            const files = selectedStoryImages.map(img => img.file);
+            if (!files.length || !auth.currentUser) return;
+
+            postStoryBtn.disabled = true;
+            postStoryBtn.textContent = 'Posting...';
+            showLoading(true);
+
+            try {
+                // Upload all story images
+                const uploadPromises = selectedStoryImages.map(async (image) => {
+                    const formData = new FormData();
+                    formData.append('image', image.file);
+                    
+                    const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=240c62aba68e28dd92302da62466b5f8`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const imgbbData = await imgbbResponse.json();
+                    if (!imgbbData.success) throw new Error('Upload failed');
+                    return imgbbData.data.url;
+                });
+
+                const imageUrls = await Promise.all(uploadPromises);
+
+                // Save each image as a separate story item
+                const storyCreationPromises = imageUrls.map(async (url) => {
+                    const storyData = {
+                        userId: auth.currentUser.uid,
+                        username: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+                        userInitials: (auth.currentUser.displayName || auth.currentUser.email.split('@')[0])
+                            .split(' ').map(n => n[0]).join('').toUpperCase(),
+                        mediaUrl: url,
+                        mediaType: 'image',
+                        timestamp: Date.now(),
+                        expiresAt: Date.now() + (48 * 60 * 60 * 1000) // 48 hours from now
+                    };
+                    
+                    const newStoryRef = push(ref(database, 'stories'));
+                    await set(newStoryRef, storyData);
+                    return newStoryRef.key;
+                });
+
+                await Promise.all(storyCreationPromises);
+                
+                storyCreationModal.style.display = 'none';
+                resetStoryCreation();
+                
+            } catch (error) {
+                console.error('Story error:', error);
+                alert(`Failed to post story: ${error.message}`);
+            } finally {
+                postStoryBtn.disabled = false;
+                postStoryBtn.textContent = 'Post Story';
+                showLoading(false);
+            }
+        });
+
+        cancelStoryBtn.addEventListener('click', () => {
+            storyCreationModal.style.display = 'none';
+            resetStoryCreation();
+        });
+
+        function resetStoryCreation() {
+            storyFileInput.value = '';
+            selectedStoryImages = [];
+            storyPreviewContainer.innerHTML = '';
+            storyUploadInfo.textContent = '';
+            postStoryBtn.disabled = true;
+        }
+
+        // Story Grid View
+        function loadStoriesGrid() {
+            storiesGridView.innerHTML = '';
+            const now = Date.now();
+            
+            const storiesRef = ref(database, 'stories');
+            onValue(storiesRef, (snapshot) => {
+                const storiesData = snapshot.val() || {};
+                currentStories = Object.entries(storiesData)
+                    .filter(([_, story]) => story.expiresAt > now)
+                    .map(([id, story]) => ({ id, ...story }));
+                
+                renderStoriesGrid(currentStories);
+            });
+        }
+
+        function renderStoriesGrid(stories) {
+            storiesGridView.innerHTML = '';
+            
+            // Group by user
+            const userStories = stories.reduce((acc, story) => {
+                if (!acc[story.userId]) {
+                    acc[story.userId] = {
+                        userId: story.userId,
+                        username: story.username,
+                        userInitials: story.userInitials,
+                        items: []
+                    };
+                }
+                acc[story.userId].items.push(story);
+                return acc;
+            }, {});
+            
+            // Add user stories to grid
+            Object.values(userStories).forEach(userStory => {
+                const latestStory = userStory.items[userStory.items.length - 1];
+                const timeLeft = Math.round((latestStory.expiresAt - Date.now()) / (60 * 60 * 1000));
+                
+                const storyElement = document.createElement('div');
+                storyElement.className = 'story-grid-item';
+                storyElement.innerHTML = `
+                    <img class="story-grid-image" src="${latestStory.mediaUrl}" alt="Story">
+                    <div class="story-grid-time">${timeLeft}h left</div>
+                `;
+                storyElement.addEventListener('click', () => {
+                    openFullscreenStory(Object.values(userStories), 
+                        Object.values(userStories).findIndex(s => s.userId === userStory.userId));
+                });
+                storiesGridView.appendChild(storyElement);
+            });
+        }
+
+        // Fullscreen Story Viewer
+        function openFullscreenStory(allStories, storyIndex) {
+            currentStoryIndex = storyIndex;
+            currentStoryItemIndex = 0;
+            currentStories = allStories;
+            
+            const story = currentStories[storyIndex];
+            currentViewingStoryId = story.items[0].id; // Store the first story item's ID for deletion
+            storyUsername.textContent = story.username;
+            storyUserAvatar.textContent = story.userInitials;
+            
+            storyProgressContainer.innerHTML = '';
+            storyFullscreenContent.innerHTML = '';
+            
+            // Add progress bars
+            story.items.forEach((_, index) => {
+                const progressContainer = document.createElement('div');
+                progressContainer.className = 'story-progress-bar';
+                progressContainer.innerHTML = '<div class="story-progress-fill"></div>';
+                storyProgressContainer.appendChild(progressContainer);
+            });
+            
+            // Show delete button only if the story belongs to the current user
+            deleteStoryBtn.style.display = story.userId === auth.currentUser?.uid ? 'block' : 'none';
+            
+            showFullscreenStoryItem(storyIndex, 0);
+            storyViewer.style.display = 'flex';
+            startStoryProgress();
+        }
+
+        function showFullscreenStoryItem(storyIndex, itemIndex) {
+            const story = currentStories[storyIndex];
+            const item = story.items[itemIndex];
+            
+            const progressBars = storyProgressContainer.querySelectorAll('.story-progress-fill');
+            progressBars.forEach((bar, index) => {
+                bar.style.width = index < itemIndex ? '100%' : '0%';
+            });
+            
+            storyFullscreenContent.innerHTML = '';
+            
+            if (item.mediaType === 'image') {
+                const img = document.createElement('img');
+                img.src = item.mediaUrl;
+                img.className = 'story-media';
+                storyFullscreenContent.appendChild(img);
+            }
+            
+            currentStoryIndex = storyIndex;
+            currentStoryItemIndex = itemIndex;
+            currentViewingStoryId = item.id; // Update the current viewing story ID
+        }
+
+        function startStoryProgress() {
+            clearInterval(storyProgressInterval);
+            
+            const currentBar = storyProgressContainer.children[currentStoryItemIndex]?.querySelector('.story-progress-fill');
+            if (!currentBar) return;
+            
+            let startTime = Date.now();
+            const duration = 8000; // 8 seconds per story
+            
+            storyProgressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                currentBar.style.width = `${progress * 100}%`;
+                
+                if (progress >= 1) nextStoryItem();
+            }, 50);
+        }
+
+        function nextStoryItem() {
+            const story = currentStories[currentStoryIndex];
+            
+            if (currentStoryItemIndex < story.items.length - 1) {
+                showFullscreenStoryItem(currentStoryIndex, currentStoryItemIndex + 1);
+                startStoryProgress();
+            } else if (currentStoryIndex < currentStories.length - 1) {
+                openFullscreenStory(currentStories, currentStoryIndex + 1);
+            } else {
+                closeFullscreenStory();
+            }
+        }
+
+        function closeFullscreenStory() {
+            clearInterval(storyProgressInterval);
+            storyViewer.style.display = 'none';
+            currentViewingStoryId = null;
+        }
+
+        // Story Navigation
+        storyNavLeft.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentStoryItemIndex > 0) {
+                showFullscreenStoryItem(currentStoryIndex, currentStoryItemIndex - 1);
+                startStoryProgress();
+            } else if (currentStoryIndex > 0) {
+                openFullscreenStory(currentStories, currentStoryIndex - 1);
+            }
+        });
+
+        storyNavRight.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nextStoryItem();
+        });
+
+        // Delete Story
+        deleteStoryBtn.addEventListener('click', async () => {
+            if (!currentViewingStoryId || !auth.currentUser) return;
+            
+            if (confirm('Are you sure you want to delete this story?')) {
+                showLoading(true);
+                try {
+                    await remove(ref(database, `stories/${currentViewingStoryId}`));
+                    closeFullscreenStory();
+                    loadStoriesGrid();
+                } catch (error) {
+                    console.error('Error deleting story:', error);
+                    alert('Failed to delete story');
+                } finally {
+                    showLoading(false);
+                }
+            }
+        });
+
+        // Swipe navigation for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        storyViewer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        storyViewer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const threshold = 50;
+            if (touchStartX - touchEndX > threshold) {
+                // Swipe left - next story
+                nextStoryItem();
+            } else if (touchEndX - touchStartX > threshold) {
+                // Swipe right - previous story
+                if (currentStoryItemIndex > 0) {
+                    showFullscreenStoryItem(currentStoryIndex, currentStoryItemIndex - 1);
+                    startStoryProgress();
+                } else if (currentStoryIndex > 0) {
+                    openFullscreenStory(currentStories, currentStoryIndex - 1);
+                }
+            }
+        }
+
+        // ======================
+        // FEED CONTENT
+        // ======================
+
+        function loadFeedContent() {
+            feed.innerHTML = '<div class="loading">Loading posts...</div>';
+            
+            const postsRef = ref(database, 'posts');
+            onValue(postsRef, (snapshot) => {
+                const posts = snapshot.val();
+                if (posts) renderPosts(posts);
+                else feed.innerHTML = '<div class="no-stories">No posts yet</div>';
+            }, (error) => {
+                feed.innerHTML = '<div class="error">Failed to load posts</div>';
+            });
+        }
+
+        function renderPosts(posts) {
+            feed.innerHTML = '';
+            
+            const postsArray = Object.entries(posts).map(([id, post]) => ({ 
+                id, 
+                ...post,
+                commentCount: post.commentCount || 0
+            }));
+            
+            postsArray.sort((a, b) => b.timestamp - a.timestamp);
+            
+            if (postsArray.length === 0) {
+                feed.innerHTML = '<div class="no-stories">No posts yet</div>';
+                return;
+            }
+            
+            postsArray.forEach(post => {
+                const isLiked = post.likes && post.likes[auth.currentUser?.uid];
+                const isCurrentUserPost = post.userId === auth.currentUser?.uid;
+                let currentImageIndex = 0;
+                
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                
+                // Post header with options menu
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-user-info">
+                            <div class="post-avatar">${post.userInitials}</div>
+                            <div class="post-user">${post.username}</div>
+                        </div>
+                        ${isCurrentUserPost ? `
+                        <div class="post-options">
+                            <button class="post-options-btn">⋯</button>
+                            <div class="post-options-menu">
+                                <div class="post-option delete" data-postid="${post.id}">Delete Post</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="post-images-container">
+                        ${post.images.map((img, index) => `
+                            <img class="post-image ${index === 0 ? 'active' : ''}" src="${img}" alt="Post">
+                        `).join('')}
+                        ${post.images.length > 1 ? `
+                        <div class="carousel-nav">
+                            <button class="carousel-btn prev-btn">←</button>
+                            <button class="carousel-btn next-btn">→</button>
+                        </div>
+                        <div class="carousel-dots">
+                            ${post.images.map((_, i) => `
+                                <span class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>
+                            `).join('')}
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="post-actions">
+                        <span class="post-action like-btn ${isLiked ? 'liked' : ''}" data-postid="${post.id}">❤️</span>
+                        <span class="post-action comment-btn" data-postid="${post.id}">💬</span>
+                        <span class="post-action">↗️</span>
+                        <span class="comment-count" data-postid="${post.id}">💬 ${post.commentCount || 0}</span>
+                    </div>
+                    <div class="post-likes">${post.likeCount || 0} likes</div>
+                    <div class="post-caption">
+                        <span class="username">${post.username}</span>
+                        ${post.caption}
+                    </div>
+                    <div class="post-time">${getTimeAgo(new Date(post.timestamp))}</div>
+                    <div class="comments-section" id="comments-${post.id}">
+                        ${post.comments ? Object.values(post.comments).slice(0, 2).map(comment => `
+                            <div class="comment">
+                                <div class="comment-avatar">${comment.userInitials}</div>
+                                <div class="comment-content">
+                                    <span class="comment-user">${comment.username}</span>
+                                    <span class="comment-text">${comment.text}</span>
+                                    <div class="comment-time">${getTimeAgo(new Date(comment.timestamp))}</div>
+                                </div>
+                            </div>
+                        `).join('') : ''}
+                        ${post.comments && Object.keys(post.comments).length > 2 ? 
+                            `<div class="view-all-comments" data-postid="${post.id}">View all ${Object.keys(post.comments).length} comments</div>` : ''}
+                    </div>
+                    <div class="add-comment">
+                        <input type="text" class="comment-input" placeholder="Add a comment..." data-postid="${post.id}">
+                        <button class="post-comment-btn" disabled data-postid="${post.id}">Post</button>
+                    </div>
+                `;
+                feed.appendChild(postElement);
+
+                // Add carousel functionality if multiple images
+                if (post.images.length > 1) {
+                    const postImages = postElement.querySelectorAll('.post-image');
+                    const prevBtn = postElement.querySelector('.prev-btn');
+                    const nextBtn = postElement.querySelector('.next-btn');
+                    const dots = postElement.querySelectorAll('.carousel-dot');
+
+                    function showImage(index) {
+                        postImages.forEach((img, i) => {
+                            img.classList.toggle('active', i === index);
+                        });
+                        dots.forEach((dot, i) => {
+                            dot.classList.toggle('active', i === index);
+                        });
+                        currentImageIndex = index;
+                    }
+
+                    prevBtn.addEventListener('click', () => {
+                        showImage((currentImageIndex - 1 + post.images.length) % post.images.length);
+                    });
+
+                    nextBtn.addEventListener('click', () => {
+                        showImage((currentImageIndex + 1) % post.images.length);
+                    });
+
+                    dots.forEach((dot, index) => {
+                        dot.addEventListener('click', () => {
+                            showImage(index);
+                        });
+                    });
+
+                    // Swipe for mobile
+                    let touchStartX = 0;
+                    let touchEndX = 0;
+
+                    postElement.addEventListener('touchstart', (e) => {
+                        touchStartX = e.changedTouches[0].screenX;
+                    }, {passive: true});
+
+                    postElement.addEventListener('touchend', (e) => {
+                        touchEndX = e.changedTouches[0].screenX;
+                        handleSwipe();
+                    }, {passive: true});
+
+                    function handleSwipe() {
+                        const threshold = 50;
+                        if (touchStartX - touchEndX > threshold) {
+                            // Swipe left - next image
+                            showImage((currentImageIndex + 1) % post.images.length);
+                        } else if (touchEndX - touchStartX > threshold) {
+                            // Swipe right - previous image
+                            showImage((currentImageIndex - 1 + post.images.length) % post.images.length);
+                        }
+                    }
+                }
+
+                // Add options menu toggle
+                if (isCurrentUserPost) {
+                    const optionsBtn = postElement.querySelector('.post-options-btn');
+                    const optionsMenu = postElement.querySelector('.post-options-menu');
+                    
+                    optionsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        optionsMenu.classList.toggle('show');
+                    });
+
+                    // Close menu when clicking elsewhere
+                    document.addEventListener('click', (e) => {
+                        if (!postElement.contains(e.target)) {
+                            optionsMenu.classList.remove('show');
+                        }
+                    });
+                }
+
+                // Add delete functionality for current user's posts
+                const deleteBtn = postElement.querySelector('.post-option.delete');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const postId = e.target.dataset.postid;
+                        
+                        if (confirm('Are you sure you want to delete this post?')) {
+                            showLoading(true);
+                            try {
+                                await remove(ref(database, `posts/${postId}`));
+                            } catch (error) {
+                                console.error('Error deleting post:', error);
+                                alert('Failed to delete post');
+                            } finally {
+                                showLoading(false);
+                            }
+                        }
+                    });
+                }
+
+                // Like functionality
+                const likeBtn = postElement.querySelector('.like-btn');
+                if (likeBtn) {
+                    likeBtn.addEventListener('click', async (e) => {
+                        if (!auth.currentUser) {
+                            alert('Please log in to like posts');
+                            window.location.href = 'start.html';
+                            return;
+                        }
+                        
+                        const postId = e.target.dataset.postid;
+                        const updates = {};
+                        
+                        if (e.target.classList.contains('liked')) {
+                            updates[`posts/${postId}/likes/${auth.currentUser.uid}`] = null;
+                            updates[`posts/${postId}/likeCount`] = (posts[postId].likeCount || 1) - 1;
+                        } else {
+                            updates[`posts/${postId}/likes/${auth.currentUser.uid}`] = true;
+                            updates[`posts/${postId}/likeCount`] = (posts[postId].likeCount || 0) + 1;
+                        }
+                        
+                        try {
+                            await update(ref(database), updates);
+                            e.target.classList.toggle('liked');
+                        } catch (error) {
+                            console.error('Like error:', error);
+                        }
+                    });
+                }
+
+                // Comment button functionality
+                const commentBtn = postElement.querySelector('.comment-btn');
+                if (commentBtn) {
+                    commentBtn.addEventListener('click', (e) => {
+                        currentCommentPostId = e.target.dataset.postid;
+                        openCommentModal(currentCommentPostId);
+                    });
+                }
+
+                // Comment count functionality
+                const commentCount = postElement.querySelector('.comment-count');
+                if (commentCount) {
+                    commentCount.addEventListener('click', (e) => {
+                        currentCommentPostId = e.target.dataset.postid;
+                        openCommentModal(currentCommentPostId);
+                    });
+                }
+
+                // View all comments link
+                const viewAllComments = postElement.querySelector('.view-all-comments');
+                if (viewAllComments) {
+                    viewAllComments.addEventListener('click', (e) => {
+                        currentCommentPostId = e.target.dataset.postid;
+                        openCommentModal(currentCommentPostId);
+                    });
+                }
+
+                // Inline comment input handling
+                const inlineCommentInput = postElement.querySelector('.comment-input');
+                const inlinePostCommentBtn = postElement.querySelector('.post-comment-btn');
+                
+                inlineCommentInput.addEventListener('input', (e) => {
+                    const postId = e.target.dataset.postid;
+                    const btn = postElement.querySelector(`.post-comment-btn[data-postid="${postId}"]`);
+                    btn.disabled = e.target.value.trim() === '';
+                });
+                
+                inlineCommentInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        const postId = e.target.dataset.postid;
+                        const btn = postElement.querySelector(`.post-comment-btn[data-postid="${postId}"]`);
+                        if (!btn.disabled) {
+                            addComment(postId, e.target.value.trim());
+                            e.target.value = '';
+                            btn.disabled = true;
+                        }
+                    }
+                });
+                
+                inlinePostCommentBtn.addEventListener('click', (e) => {
+                    const postId = e.target.dataset.postid;
+                    const input = postElement.querySelector(`.comment-input[data-postid="${postId}"]`);
+                    if (input.value.trim()) {
+                        addComment(postId, input.value.trim());
+                        input.value = '';
+                        e.target.disabled = true;
+                    }
+                });
+            });
+        }
+
+        // ======================
+        // STORIES (HORIZONTAL SCROLL)
+        // ======================
+
+        function loadStories() {
+            storiesContainer.innerHTML = '';
+            const now = Date.now();
+            
+            const storiesRef = ref(database, 'stories');
+            onValue(storiesRef, (snapshot) => {
+                const storiesData = snapshot.val() || {};
+                const validStories = Object.entries(storiesData)
+                    .filter(([_, story]) => story.expiresAt > now)
+                    .map(([id, story]) => ({ id, ...story }));
+                
+                renderStories(validStories);
+            });
+        }
+
+        function renderStories(storiesData) {
+            storiesContainer.innerHTML = '';
+            
+            // Group by user
+            const userStories = storiesData.reduce((acc, story) => {
+                if (!acc[story.userId]) {
+                    acc[story.userId] = {
+                        userId: story.userId,
+                        username: story.username,
+                        userInitials: story.userInitials,
+                        items: []
+                    };
+                }
+                acc[story.userId].items.push(story);
+                return acc;
+            }, {});
+            
+            // Add create story button
+            storiesContainer.appendChild(addStoryBtn);
+            
+            // Add user stories
+            Object.values(userStories).forEach(userStory => {
+                const storyElement = document.createElement('div');
+                storyElement.className = 'story';
+                storyElement.innerHTML = `
+                    <div class="story-avatar">
+                        <div class="story-avatar-inner">
+                            <div class="initials">${userStory.userInitials}</div>
+                        </div>
+                    </div>
+                    <div class="story-username">${userStory.username}</div>
+                `;
+                storyElement.addEventListener('click', () => {
+                    openFullscreenStory(Object.values(userStories), 
+                    Object.values(userStories).findIndex(s => s.userId === userStory.userId));
+                });
+                storiesContainer.appendChild(storyElement);
+            });
+        }
+
+        // ======================
+        // UTILITY FUNCTIONS
+        // ======================
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((Date.now() - date) / 1000);
+            
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+            
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
+                }
+            }
+            
+            return seconds <= 5 ? 'just now' : `${Math.floor(seconds)} seconds ago`;
+        }
+
+        function showLoading(show) {
+            loadingIndicator.style.display = show ? 'flex' : 'none';
+        }
+
+        function updateActiveTab() {
+            footerIcons.forEach(icon => icon.classList.remove('active'));
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            switch(currentPage) {
+                case 'home.html':
+                    footerIcons[0].classList.add('active');
+                    break;
+                case 'search.html':
+                    footerIcons[1].classList.add('active');
+                    break;
+                case 'image.html':
+                    footerIcons[2].classList.add('active');
+                    break;
+                case 'notification.html':
+                    footerIcons[3].classList.add('active');
+                    break;
+                case 'chat.html':
+                    footerIcons[4].classList.add('active');
+                    break;
+                default:
+                    footerIcons[0].classList.add('active');
+            }
+        }
+
+        // Footer Navigation
+        footerIcons.forEach((icon, index) => {
+            icon.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pages = ['home.html', 'search.html', 'image.html', 'notification.html', 'chat.html'];
+                if (index < pages.length) {
+                    window.location.href = pages[index];
+                }
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateActiveTab();
+            showLoading(false);
+        });
+    </script>
+</body>
+</html>

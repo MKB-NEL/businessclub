@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Create Notification</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"], 
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .preview-container {
+            margin: 15px 0;
+            border: 1px dashed #ccc;
+            padding: 10px;
+            border-radius: 4px;
+            min-height: 50px;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .video-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .reset-btn {
+            background: #f44336;
+            color: white;
+        }
+        
+        .notification-type {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .notification-type label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cliq</div>
+        <div class="nav-icons">
+            <button class="logout-btn" id="logoutBtn">⇨</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="form-container">
+            <h1>Create New Notification</h1>
+            
+            <div class="form-group">
+                <label>Notification Type</label>
+                <div class="notification-type">
+                    <label>
+                        <input type="radio" name="notificationType" value="text" checked> Text Only
+                    </label>
+                    <label>
+                        <input type="radio" name="notificationType" value="image"> Image
+                    </label>
+                    <label>
+                        <input type="radio" name="notificationType" value="video"> YouTube Video
+                    </label>
+                    <label>
+                        <input type="radio" name="notificationType" value="link"> Link/Button
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="notificationTitle">Title</label>
+                <input type="text" id="notificationTitle" placeholder="Enter notification title">
+            </div>
+            
+            <div class="form-group">
+                <label for="notificationMessage">Message</label>
+                <textarea id="notificationMessage" placeholder="Enter notification message"></textarea>
+            </div>
+            
+            <div class="form-group" id="imageUploadGroup" style="display:none;">
+                <label for="notificationImage">Upload Image</label>
+                <input type="file" id="notificationImage" accept="image/*">
+                <div class="preview-container">
+                    <img id="imagePreview" class="image-preview" alt="Image Preview">
+                </div>
+            </div>
+            
+            <div class="form-group" id="videoUrlGroup" style="display:none;">
+                <label for="youtubeUrl">YouTube Video URL</label>
+                <input type="text" id="youtubeUrl" placeholder="https://youtube.com/watch?v=...">
+                <div class="preview-container">
+                    <div id="videoPreview" class="video-preview"></div>
+                </div>
+            </div>
+            
+            <div class="form-group" id="linkGroup" style="display:none;">
+                <label for="linkUrl">Link URL</label>
+                <input type="text" id="linkUrl" placeholder="https://example.com">
+                
+                <label for="linkText">Link Text (optional)</label>
+                <input type="text" id="linkText" placeholder="Click here">
+                
+                <label for="linkType">Link Type</label>
+                <select id="linkType">
+                    <option value="button">Button</option>
+                    <option value="text">Text Link</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="targetUsers">Target Users</label>
+                <select id="targetUsers">
+                    <option value="all">All Users</option>
+                    <option value="specific">Specific User</option>
+                    <option value="group">User Group</option>
+                </select>
+                
+                <div id="specificUserGroup" style="display:none; margin-top:10px;">
+                    <label for="specificUserId">User ID</label>
+                    <input type="text" id="specificUserId" placeholder="Enter user ID">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="submit-btn" id="submitNotification">Send Notification</button>
+                <button class="reset-btn" id="resetForm">Reset</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase configuration -->
+    <script>
+         const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+    </script>
+
+    <!-- Module script for Firebase operations -->
+    <script type="module">
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { 
+            getStorage, 
+            ref as storageRef, 
+            uploadBytes, 
+            getDownloadURL 
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Main notification sending function
+        async function sendNotification(notificationData) {
+            try {
+                const notificationsRef = collection(db, "notifications");
+                const docRef = await addDoc(notificationsRef, notificationData);
+                console.log("Notification sent with ID: ", docRef.id);
+                return true;
+            } catch (error) {
+                console.error("Error sending notification: ", error);
+                throw error;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('submitNotification').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const notificationData = {
+                title: document.getElementById('notificationTitle').value.trim(),
+                message: document.getElementById('notificationMessage').value.trim(),
+                type: document.querySelector('input[name="notificationType"]:checked').value,
+                timestamp: serverTimestamp(),
+                status: "unread"
+            };
+
+            // Validate required fields
+            if (!notificationData.title || !notificationData.message) {
+                alert("Title and message are required");
+                return;
+            }
+
+            // Handle image upload
+            if (notificationData.type === 'image') {
+                const file = document.getElementById('notificationImage').files[0];
+                if (file) {
+                    try {
+                        const storagePath = `notifications/images/${Date.now()}_${file.name}`;
+                        const storageReference = storageRef(storage, storagePath);
+                        await uploadBytes(storageReference, file);
+                        notificationData.imageUrl = await getDownloadURL(storageReference);
+                    } catch (error) {
+                        console.error("Image upload failed:", error);
+                        alert("Failed to upload image");
+                        return;
+                    }
+                }
+            }
+
+            // Handle YouTube video
+            if (notificationData.type === 'video') {
+                const url = document.getElementById('youtubeUrl').value.trim();
+                if (url.includes('youtube.com/watch?v=')) {
+                    notificationData.videoId = url.split('v=')[1].split('&')[0];
+                } else {
+                    alert("Please enter a valid YouTube URL");
+                    return;
+                }
+            }
+
+            // Handle links
+            if (notificationData.type === 'link') {
+                notificationData.linkUrl = document.getElementById('linkUrl').value.trim();
+                if (!notificationData.linkUrl) {
+                    alert("Please enter a link URL");
+                    return;
+                }
+                notificationData.linkText = document.getElementById('linkText').value.trim() || "Click here";
+                notificationData.linkType = document.getElementById('linkType').value;
+            }
+
+            // Send notification
+            try {
+                await sendNotification(notificationData);
+                alert("Notification sent successfully!");
+                document.getElementById('resetForm').click();
+            } catch (error) {
+                alert(`Failed to send notification: ${error.message}`);
+            }
+        });
+
+        // UI Event Handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle notification type change
+            document.querySelectorAll('input[name="notificationType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('imageUploadGroup').style.display = 'none';
+                    document.getElementById('videoUrlGroup').style.display = 'none';
+                    document.getElementById('linkGroup').style.display = 'none';
+                    
+                    switch(this.value) {
+                        case 'image':
+                            document.getElementById('imageUploadGroup').style.display = 'block';
+                            break;
+                        case 'video':
+                            document.getElementById('videoUrlGroup').style.display = 'block';
+                            break;
+                        case 'link':
+                            document.getElementById('linkGroup').style.display = 'block';
+                            break;
+                    }
+                });
+            });
+
+            // Handle image preview
+            document.getElementById('notificationImage').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const imagePreview = document.getElementById('imagePreview');
+                        imagePreview.src = event.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Handle YouTube URL changes
+            document.getElementById('youtubeUrl').addEventListener('input', function() {
+                const url = this.value.trim();
+                const videoPreview = document.getElementById('videoPreview');
+                
+                if (url.includes('youtube.com/watch?v=')) {
+                    const videoId = url.split('v=')[1].split('&')[0];
+                    videoPreview.innerHTML = `
+                        <iframe width="100%" height="100%" 
+                        src="https://www.youtube.com/embed/${videoId}" 
+                        frameborder="0" allowfullscreen></iframe>
+                    `;
+                    videoPreview.style.display = 'block';
+                } else {
+                    videoPreview.innerHTML = '';
+                    videoPreview.style.display = 'none';
+                }
+            });
+
+            // Handle target user selection
+            document.getElementById('targetUsers').addEventListener('change', function() {
+                document.getElementById('specificUserGroup').style.display = 
+                    this.value === 'specific' ? 'block' : 'none';
+            });
+
+            // Handle form reset
+            document.getElementById('resetForm').addEventListener('click', function() {
+                document.querySelector('input[name="notificationType"][value="text"]').checked = true;
+                document.getElementById('notificationTitle').value = '';
+                document.getElementById('notificationMessage').value = '';
+                document.getElementById('imageUploadGroup').style.display = 'none';
+                document.getElementById('videoUrlGroup').style.display = 'none';
+                document.getElementById('linkGroup').style.display = 'none';
+                document.getElementById('imagePreview').src = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('youtubeUrl').value = '';
+                document.getElementById('videoPreview').innerHTML = '';
+                document.getElementById('videoPreview').style.display = 'none';
+                document.getElementById('targetUsers').value = 'all';
+                document.getElementById('specificUserGroup').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Private Chat</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #fafafa;
+            color: #262626;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: white;
+            border-bottom: 1px solid #dbdbdb;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            color: #1e88e5;
+            margin-right: 12px;
+            text-decoration: none;
+        }
+        
+        .chat-partner {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-partner-name {
+            font-weight: 600;
+        }
+        
+        .chat-partner-status {
+            font-size: 12px;
+            color: #8e8e8e;
+        }
+        
+        .private-badge {
+            background-color: #e8f5e9;
+            color: #4caf50;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .private-badge svg {
+            width: 12px;
+            height: 12px;
+            margin-right: 4px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 70px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            max-width: 75%;
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .sent {
+            align-self: flex-end;
+            background-color: #1e88e5;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .received {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: #262626;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            margin-top: 4px;
+            text-align: right;
+            opacity: 0.7;
+        }
+        
+        .message-input-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid #dbdbdb;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dbdbdb;
+            border-radius: 24px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+        
+        .send-button {
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .send-button:disabled {
+            background-color: #cccccc;
+            cursor: default;
+        }
+        
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            color: #8e8e8e;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #1e88e5;
+        }
+        
+        .typing-indicator {
+            font-size: 12px;
+            color: #8e8e8e;
+            margin-bottom: 8px;
+            align-self: flex-start;
+            padding-left: 16px;
+        }
+        
+        /* Loading spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top: 4px solid #1e88e5;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        
+        /* Message status indicators */
+        .message-status {
+            display: inline-block;
+            margin-left: 4px;
+        }
+        
+        .read-receipt {
+            color: #4caf50;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="chat-header">
+            <a href="search.html" class="back-button">←</a>
+            <div class="chat-partner">
+                <div class="chat-partner-name" id="partnerName">Loading...</div>
+                <div class="chat-partner-status" id="partnerStatus">Online</div>
+            </div>
+        </div>
+        <div class="private-badge">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a4 4 0 0 1 4 4v1h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V7a4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2v1h4V7a2 2 0 0 0-2-2z"/></svg>
+            Private Chat
+        </div>
+    </header>
+    
+    <div class="chat-container" id="chatContainer">
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">💬</div>
+            <h3>Your private messages are secure</h3>
+            <p>Only you and <span id="emptyStatePartner">the recipient</span> can see these messages</p>
+        </div>
+        <!-- Messages will be inserted here -->
+    </div>
+    
+    <div class="message-input-container">
+        <input type="text" class="message-input" id="messageInput" placeholder="Type a message..." autocomplete="off">
+        <button class="send-button" id="sendButton" disabled>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            collection, 
+            query, 
+            where, 
+            orderBy, 
+            onSnapshot, 
+            addDoc, 
+            serverTimestamp,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.appspot.com",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
+    
+        // DOM elements
+        const partnerName = document.getElementById('partnerName');
+        const partnerStatus = document.getElementById('partnerStatus');
+        const chatContainer = document.getElementById('chatContainer');
+        const emptyState = document.getElementById('emptyState');
+        const emptyStatePartner = document.getElementById('emptyStatePartner');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        // Chat variables
+        let currentUser = null;
+        let chatRoomId = null;
+        let partnerId = null;
+        let partnerData = null;
+        let unsubscribeMessages = null;
+        
+        // Initialize the chat
+        async function initChat() {
+            // Get room ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            chatRoomId = urlParams.get('room');
+            
+            if (!chatRoomId) {
+                showError("Invalid chat room");
+                return;
+            }
+            
+            // Check authentication
+            currentUser = auth.currentUser;
+            if (!currentUser) {
+                window.location.href = 'start.html';
+                return;
+            }
+            
+            // Verify the user is part of this chat
+            try {
+                const chatRef = doc(firestore, 'privateChats', chatRoomId);
+                const chatSnap = await getDoc(chatRef);
+                
+                if (!chatSnap.exists()) {
+                    showError("Chat room not found");
+                    return;
+                }
+                
+                const chatData = chatSnap.data();
+                if (!chatData.participants || !chatData.participants[currentUser.uid]) {
+                    showError("You don't have access to this chat");
+                    return;
+                }
+                
+                // Get partner ID
+                const participants = Object.keys(chatData.participants);
+                partnerId = participants.find(id => id !== currentUser.uid);
+                
+                if (!partnerId) {
+                    showError("Invalid chat participant");
+                    return;
+                }
+                
+                // Load partner data
+                const partnerRef = doc(firestore, 'members', partnerId);
+                const partnerSnap = await getDoc(partnerRef);
+                
+                if (partnerSnap.exists()) {
+                    partnerData = partnerSnap.data();
+                    partnerName.textContent = partnerData.name || "Unknown";
+                    emptyStatePartner.textContent = partnerData.name || "the recipient";
+                } else {
+                    partnerName.textContent = "Unknown";
+                    emptyStatePartner.textContent = "the recipient";
+                }
+                
+                // Load messages
+                loadMessages();
+                
+                // Set up message input
+                setupMessageInput();
+                
+            } catch (error) {
+                console.error("Error initializing chat:", error);
+                showError("Failed to load chat");
+            }
+        }
+        
+        // Load messages from Firestore
+        function loadMessages() {
+            const messagesRef = collection(firestore, 'privateChats', chatRoomId, 'messages');
+            const messagesQuery = query(messagesRef, orderBy('timestamp', 'asc'));
+            
+            unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+                // Hide empty state if we have messages
+                if (!snapshot.empty) {
+                    emptyState.style.display = 'none';
+                }
+                
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        addMessageToChat(change.doc.data(), change.doc.id);
+                    }
+                });
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 100);
+                
+                // Mark messages as read
+                markMessagesAsRead();
+            }, (error) => {
+                console.error("Error loading messages:", error);
+                showError("Failed to load messages");
+            });
+        }
+        
+        // Add a message to the chat UI
+        function addMessageToChat(messageData, messageId) {
+            const messageDiv = document.createElement('div');
+            const isSent = messageData.sender === currentUser.uid;
+            
+            // Format timestamp
+            let timeString = '';
+            if (messageData.timestamp) {
+                const time = messageData.timestamp.toDate();
+                timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            messageDiv.dataset.id = messageId;
+            messageDiv.innerHTML = `
+                <div>${messageData.text}</div>
+                <div class="message-time">
+                    ${timeString}
+                    ${isSent ? '<span class="message-status">' + getStatusIcon(messageData) + '</span>' : ''}
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+        }
+        
+        // Get appropriate status icon for message
+        function getStatusIcon(messageData) {
+            if (messageData.read) {
+                return '<span class="read-receipt">✓✓</span>';
+            } else if (messageData.delivered) {
+                return '<span>✓✓</span>';
+            }
+            return '<span>✓</span>';
+        }
+        
+        // Set up message input and sending
+        function setupMessageInput() {
+            messageInput.addEventListener('input', () => {
+                sendButton.disabled = messageInput.value.trim() === '';
+            });
+            
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !sendButton.disabled) {
+                    sendMessage();
+                }
+            });
+            
+            sendButton.addEventListener('click', sendMessage);
+        }
+        
+        // Send a new message
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !currentUser || !chatRoomId) return;
+            
+            try {
+                sendButton.disabled = true;
+                messageInput.disabled = true;
+                
+                const messagesRef = collection(firestore, 'privateChats', chatRoomId, 'messages');
+                
+                // Add new message
+                await addDoc(messagesRef, {
+                    sender: currentUser.uid,
+                    text: text,
+                    timestamp: serverTimestamp(),
+                    read: false,
+                    delivered: false
+                });
+                
+                // Update chat lastUpdated timestamp
+                const chatRef = doc(firestore, 'privateChats', chatRoomId);
+                await updateDoc(chatRef, {
+                    lastUpdated: serverTimestamp(),
+                    lastMessage: text
+                });
+                
+                // Clear input
+                messageInput.value = '';
+                messageInput.focus();
+                
+            } catch (error) {
+                console.error("Error sending message:", error);
+                showError("Failed to send message");
+            } finally {
+                sendButton.disabled = true;
+                messageInput.disabled = false;
+            }
+        }
+        
+        // Mark received messages as read
+        async function markMessagesAsRead() {
+            if (!currentUser || !chatRoomId) return;
+            
+            try {
+                const messagesRef = collection(firestore, 'privateChats', chatRoomId, 'messages');
+                const unreadQuery = query(
+                    messagesRef,
+                    where('sender', '==', partnerId),
+                    where('read', '==', false)
+                );
+                
+                const unreadSnap = await getDocs(unreadQuery);
+                
+                if (!unreadSnap.empty) {
+                    const batch = [];
+                    unreadSnap.forEach(doc => {
+                        batch.push(updateDoc(doc.ref, { read: true }));
+                    });
+                    
+                    await Promise.all(batch);
+                }
+            } catch (error) {
+                console.error("Error marking messages as read:", error);
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            emptyState.style.display = 'flex';
+            emptyState.innerHTML = `
+                <div class="empty-icon">⚠️</div>
+                <h3>${message}</h3>
+                <p>Please try again later</p>
+            `;
+        }
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (unsubscribeMessages) {
+                unsubscribeMessages();
+            }
+        });
+        
+        // Initialize when auth state is known
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                initChat();
+            } else {
+                window.location.href = 'start.html';
+            }
+        });
+    </script>
+</body>
+</html>

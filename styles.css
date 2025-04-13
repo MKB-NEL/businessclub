@@ -1,0 +1,696 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #fafafa;
+    color: #262626;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: white;
+    border-bottom: 1px solid #dbdbdb;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-icons {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-icons a {
+    color: #262626;
+    text-decoration: none;
+    font-size: 24px;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: #262626;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+main {
+    margin-top: 60px;
+    padding-bottom: 60px;
+}
+
+.user-info {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #efefef;
+    background-color: white;
+}
+
+.avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #efefef;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 28px;
+    color: white;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+}
+
+.user-details h2 {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.user-details p {
+    font-size: 14px;
+    color: #8e8e8e;
+}
+
+.stories {
+    padding: 16px;
+    background-color: white;
+    border-bottom: 1px solid #efefef;
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+}
+
+.story {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+}
+
+.story-avatar {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-avatar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.story-avatar-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-avatar-inner .initials {
+    font-size: 20px;
+    color: #1e88e5;
+    font-weight: 600;
+}
+
+.story-username {
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: center;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.content-tabs {
+    display: flex;
+    border-bottom: 1px solid #efefef;
+    background-color: white;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 16px 0;
+    font-weight: 600;
+    color: #8e8e8e;
+    cursor: pointer;
+}
+
+.tab.active {
+    color: #262626;
+    border-bottom: 2px solid #1e88e5;
+}
+
+.feed {
+    padding: 16px;
+}
+
+.post {
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.post-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.post-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #efefef;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 12px;
+    color: white;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+}
+
+.post-user {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.post-image {
+    width: 100%;
+    height: auto;
+}
+
+.post-actions {
+    padding: 8px 16px;
+    display: flex;
+    gap: 16px;
+}
+
+.post-action {
+    font-size: 24px;
+    color: #262626;
+    cursor: pointer;
+}
+
+.post-likes {
+    padding: 0 16px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.post-caption {
+    padding: 0 16px 12px;
+    font-size: 14px;
+}
+
+.post-caption .username {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.post-time {
+    padding: 0 16px 12px;
+    font-size: 10px;
+    color: #8e8e8e;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: white;
+    border-top: 1px solid #dbdbdb;
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-around;
+    z-index: 100;
+}
+
+.footer-icon {
+    color: #262626;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #8e8e8e;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 2px dashed #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    cursor: pointer;
+}
+
+.file-upload:hover {
+    border-color: #1e88e5;
+}
+
+.file-upload input {
+    display: none;
+}
+
+.file-upload-icon {
+    font-size: 40px;
+    color: #1e88e5;
+    margin-bottom: 10px;
+}
+
+.file-upload-text {
+    text-align: center;
+    color: #8e8e8e;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 10px;
+    border-radius: 8px;
+    display: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #f5f5f5;
+    border: 1px solid #dbdbdb;
+}
+
+.post-btn {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+}
+
+.post-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Story viewer */
+.story-viewer {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 300;
+}
+
+.story-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+.story-user {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.story-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.story-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-user-avatar .initials {
+    font-size: 12px;
+    color: white;
+}
+
+.close-story {
+    color: white;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.story-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-media {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.story-progress {
+    position: absolute;
+    top: 12px;
+    width: calc(100% - 32px);
+    left: 16px;
+    display: flex;
+    gap: 4px;
+}
+
+.progress-bar {
+    height: 2px;
+    background-color: rgba(255,255,255,0.3);
+    flex: 1;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: white;
+    width: 0%;
+    transition: width linear;
+}
+
+.story-audio {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+.no-stories {
+    text-align: center;
+    padding: 20px;
+    color: #8e8e8e;
+    font-size: 14px;
+}
+.add-story-btn {
+    position: relative;
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 16px;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.like-btn.liked {
+    color: #ed4956;
+}
+
+.comment-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 400;
+    justify-content: center;
+    align-items: center;
+}
+
+.comment-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-header {
+    padding: 16px;
+    border-bottom: 1px solid #dbdbdb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.comment-input-container {
+    padding: 16px;
+    border-top: 1px solid #dbdbdb;
+    display: flex;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #dbdbdb;
+    border-radius: 24px;
+    margin-right: 8px;
+}
+
+.send-comment-btn {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 0 16px;
+    cursor: pointer;
+}
+
+.footer-icon.active {
+    color: #1e88e5;
+}
+
+.story-viewer .story-nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.story-viewer .story-nav.prev {
+    left: 0;
+}
+
+.story-viewer .story-nav.next {
+    right: 0;
+}
+/* Story Upload Modal */
+#storyUploadModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #storyUploadModal .modal-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    padding: 20px;
+    animation: fadeIn 0.3s;
+  }
+  
+  #storyUploadModal .preview-container {
+    margin: 15px 0;
+    text-align: center;
+  }
+  
+  #storyUploadModal .preview-media {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+  }
+  
+  /* Stories Container (Horizontal Scroll) */
+  .stories-container {
+    display: flex;
+    gap: 15px;
+    padding: 10px 15px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  .stories-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  
+  .story-item {
+    flex: 0 0 auto;
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .story-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ff9966, #ff5e62);
+    padding: 3px;
+    margin: 0 auto;
+  }
+  
+  .story-avatar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .add-story-btn {
+    background: linear-gradient(45deg, #007BFF, #00BFFF) !important;
+    color: white;
+    font-weight: bold;
+    border: none;
+  }

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliq - Chat</title>
+    <link rel="icon" href="/logo.png" type="image/png">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Business Club" />
+<link rel="manifest" href="/site.webmanifest" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #262626;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Custom scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 5px;
+            border: 2px solid #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: white;
+            border-bottom: 1px solid #dbdbdb;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 60px;
+            margin-bottom: 60px;
+            overflow: hidden;
+        }
+        
+        .chat-tabs {
+            display: flex;
+            border-bottom: 1px solid #dbdbdb;
+            background-color: white;
+        }
+        
+        .chat-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .chat-tab:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .chat-tab.active {
+            border-bottom: 2px solid #1e88e5;
+            color: #1e88e5;
+            background-color: #f0f7ff;
+        }
+        
+        .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-room {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-room.active {
+            display: flex;
+        }
+        
+        .messages-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background-color: #fafafa;
+            scroll-behavior: smooth;
+        }
+        
+        .message {
+            margin-bottom: 12px;
+            max-width: 80%;
+            align-self: flex-start;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+            text-align: right;
+        }
+        
+        .message-user {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #1e88e5;
+        }
+        
+        .message-content {
+            background-color: white;
+            padding: 10px 14px;
+            border-radius: 18px;
+            display: inline-block;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            word-break: break-word;
+            max-width: 100%;
+        }
+        
+        .message.sent .message-content {
+            background-color: #1e88e5;
+            color: white;
+        }
+        
+        .message-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+        
+        .message-link {
+            color: #1e88e5;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #8e8e8e;
+            margin-top: 4px;
+        }
+        
+        .input-container {
+            padding: 12px 16px;
+            background-color: white;
+            border-top: 1px solid #dbdbdb;
+            display: flex;
+            align-items: center;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dbdbdb;
+            border-radius: 24px;
+            font-size: 16px;
+            margin-right: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .message-input:focus {
+            border-color: #1e88e5;
+        }
+        
+        .send-btn {
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .send-btn:hover {
+            background-color: #0d47a1;
+        }
+        
+        .emoji-picker {
+            position: relative;
+            margin-right: 8px;
+        }
+        
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1e88e5;
+            transition: transform 0.2s;
+        }
+        
+        .emoji-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .emoji-container {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            background-color: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 12px;
+            padding: 8px;
+            display: none;
+            flex-wrap: wrap;
+            width: 200px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .emoji-container.show {
+            display: flex;
+        }
+        
+        .emoji-item {
+            font-size: 24px;
+            padding: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .emoji-item:hover {
+            transform: scale(1.2);
+        }
+        
+        .private-room-form {
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            margin: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .private-room-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .private-room-input:focus {
+            border-color: #1e88e5;
+        }
+        
+        .enter-room-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .enter-room-btn:hover {
+            background-color: #0d47a1;
+        }
+        
+        .private-room-info {
+            text-align: center;
+            padding: 20px;
+            color: #8e8e8e;
+        }
+        
+        .private-chat-ui {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .private-room-header {
+            position: relative;
+            padding: 12px 40px;
+            text-align: center;
+            font-weight: 600;
+            background-color: white;
+            border-bottom: 1px solid #dbdbdb;
+        }
+        
+        .close-private-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #8e8e8e;
+            transition: color 0.2s;
+        }
+        
+        .close-private-btn:hover {
+            color: #1e88e5;
+        }
+        
+        .presence-indicator {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .loading-messages {
+            text-align: center;
+            padding: 10px;
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+        
+        .load-more-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 8px 16px;
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .load-more-btn:hover {
+            background-color: #0d47a1;
+        }
+        
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid #dbdbdb;
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+        
+        .footer-icon {
+            color: #262626;
+            font-size: 24px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-icon:hover {
+            color: #1e88e5;
+        }
+        
+        .footer-icon.active {
+            color: #1e88e5;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 480px) {
+            .message {
+                max-width: 90%;
+            }
+            
+            .emoji-container {
+                width: 180px;
+            }
+            
+            .private-room-form {
+                margin: 10px;
+            }
+            
+            .message-input, .private-room-input {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Cliq | Chat Rooms</div>
+    </header>
+    
+    <div class="chat-container">
+        <div class="chat-tabs">
+            <div class="chat-tab active" data-tab="public">Public Chat</div>
+            <div class="chat-tab" data-tab="private">Private Chat</div>
+        </div>
+        
+        <div class="chat-content">
+            <!-- Public Chat Room -->
+            <div class="chat-room active" id="public-room">
+                <div class="messages-container" id="public-messages"></div>
+                <div class="input-container">
+                    <div class="emoji-picker">
+                        <button class="emoji-btn">😀</button>
+                        <div class="emoji-container" id="emoji-picker">
+                            <div class="emoji-item">😀</div>
+                            <div class="emoji-item">😂</div>
+                            <div class="emoji-item">❤️</div>
+                            <div class="emoji-item">👍</div>
+                            <div class="emoji-item">👋</div>
+                            <div class="emoji-item">🎉</div>
+                            <div class="emoji-item">🔥</div>
+                            <div class="emoji-item">🤔</div>
+                        </div>
+                    </div>
+                    <input type="text" class="message-input" id="public-input" placeholder="Type a message...">
+                    <button class="send-btn" id="public-send">➤</button>
+                </div>
+            </div>
+            
+            <!-- Private Chat Room -->
+            <div class="chat-room" id="private-room">
+                <div class="private-room-form" id="private-room-form">
+                    <input type="text" class="private-room-input" id="private-key" placeholder="Enter room keyphrase">
+                    <button class="enter-room-btn" id="enter-room">Enter Room</button>
+                </div>
+                <div id="private-chat-ui" style="display:none;">
+                    <div class="private-room-header">
+                        <button class="close-private-btn" id="close-private">✕</button>
+                        <div class="presence-indicator" id="presence-indicator">1</div>
+                        Private Chat
+                    </div>
+                    <div class="messages-container" id="private-messages"></div>
+                    <div class="input-container">
+                        <div class="emoji-picker">
+                            <button class="emoji-btn">😀</button>
+                            <div class="emoji-container" id="private-emoji-picker">
+                                <div class="emoji-item">😀</div>
+                                <div class="emoji-item">😂</div>
+                                <div class="emoji-item">❤️</div>
+                                <div class="emoji-item">👍</div>
+                                <div class="emoji-item">👋</div>
+                                <div class="emoji-item">🎉</div>
+                                <div class="emoji-item">🔥</div>
+                                <div class="emoji-item">🤔</div>
+                            </div>
+                        </div>
+                        <input type="text" class="message-input" id="private-input" placeholder="Type a private message...">
+                        <button class="send-btn" id="private-send">➤</button>
+                    </div>
+                </div>
+                <div class="private-room-info" id="private-room-info">
+                    Enter a keyphrase to start a private chat. Both users must enter the same keyphrase.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <a href="home.html" class="footer-icon">🏠</a>
+        <a href="search.html" class="footer-icon">🔍</a>
+        <a href="image.html" class="footer-icon">📸</a>
+        <a href="notification.html" class="footer-icon">🔔</a>
+        <a href="chat.html" class="footer-icon active">📧</a>
+    </footer>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, off, set, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getFirestore, collection, query, where, orderBy, limit, addDoc, onSnapshot, startAfter, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.appspot.com",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        const firestore = getFirestore(app);
+        const storage = getStorage(app);
+
+        // DOM elements
+        const chatTabs = document.querySelectorAll('.chat-tab');
+        const chatRooms = document.querySelectorAll('.chat-room');
+        const publicMessages = document.getElementById('public-messages');
+        const privateMessages = document.getElementById('private-messages');
+        const publicInput = document.getElementById('public-input');
+        const privateInput = document.getElementById('private-input');
+        const publicSend = document.getElementById('public-send');
+        const privateSend = document.getElementById('private-send');
+        const emojiBtn = document.querySelector('.emoji-btn');
+        const emojiPicker = document.getElementById('emoji-picker');
+        const privateEmojiBtn = document.querySelector('#private-room .emoji-btn');
+        const privateEmojiPicker = document.getElementById('private-emoji-picker');
+        const privateRoomForm = document.getElementById('private-room-form');
+        const privateKeyInput = document.getElementById('private-key');
+        const enterRoomBtn = document.getElementById('enter-room');
+        const privateChatUI = document.getElementById('private-chat-ui');
+        const privateRoomInfo = document.getElementById('private-room-info');
+        const closePrivateBtn = document.getElementById('close-private');
+        const presenceIndicator = document.getElementById('presence-indicator');
+
+        // Constants for pagination
+        const MESSAGE_LIMIT = 20;
+        let currentUser = null;
+        let currentRoomKey = null;
+        let publicChatUnsubscribe = null;
+        let privateChatUnsubscribe = null;
+        let presenceRef = null;
+        let presenceUnsubscribe = null;
+        let publicLastVisible = null;
+        let privateLastVisible = null;
+        let publicLoading = false;
+        let privateLoading = false;
+        let publicHasMore = true;
+        let privateHasMore = true;
+
+        // Initialize chat when user is authenticated
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                initPublicChat();
+                setupScrollListeners();
+            } else {
+                window.location.href = 'start.html';
+            }
+        });
+
+        // Initialize public chat
+        function initPublicChat() {
+            if (publicChatUnsubscribe) {
+                publicChatUnsubscribe();
+            }
+            
+            publicMessages.innerHTML = '<div class="loading-messages">Loading messages...</div>';
+            
+            const q = query(
+                collection(firestore, "public-chats"),
+                orderBy("timestamp", "desc"),
+                limit(MESSAGE_LIMIT)
+            );
+            
+            publicChatUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                publicMessages.innerHTML = '';
+                const messages = [];
+                publicLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+                
+                querySnapshot.forEach((doc) => {
+                    messages.unshift(doc.data());
+                });
+                
+                messages.forEach(message => {
+                    displayMessage(message, publicMessages, false);
+                });
+                
+                if (querySnapshot.docs.length === MESSAGE_LIMIT) {
+                    addLoadMoreButton(publicMessages, 'public');
+                }
+                
+                scrollToBottom(publicMessages, false);
+                publicLoading = false;
+            });
+        }
+
+        // Initialize private chat
+        function initPrivateChat(roomKey) {
+            currentRoomKey = roomKey;
+            
+            if (privateChatUnsubscribe) {
+                privateChatUnsubscribe();
+            }
+            if (presenceUnsubscribe) {
+                presenceUnsubscribe();
+            }
+            
+            privateRoomForm.style.display = 'none';
+            privateChatUI.style.display = 'block';
+            privateRoomInfo.style.display = 'none';
+            privateMessages.innerHTML = '<div class="loading-messages">Loading messages...</div>';
+            
+            setupPresence(roomKey);
+            
+            const q = query(
+                collection(firestore, `private-chats/${roomKey}/messages`),
+                orderBy("timestamp", "desc"),
+                limit(MESSAGE_LIMIT)
+            );
+            
+            privateChatUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                privateMessages.innerHTML = '';
+                const messages = [];
+                privateLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+                
+                querySnapshot.forEach((doc) => {
+                    messages.unshift(doc.data());
+                });
+                
+                messages.forEach(message => {
+                    displayMessage(message, privateMessages, true);
+                });
+                
+                if (querySnapshot.docs.length === MESSAGE_LIMIT) {
+                    addLoadMoreButton(privateMessages, 'private');
+                }
+                
+                scrollToBottom(privateMessages, false);
+                privateLoading = false;
+            });
+        }
+
+        // Set up presence tracking in private room
+        function setupPresence(roomKey) {
+            presenceRef = ref(database, `presence/private-rooms/${roomKey}/${currentUser.uid}`);
+            
+            set(presenceRef, {
+                userId: currentUser.uid,
+                name: currentUser.displayName || currentUser.email.split('@')[0],
+                lastOnline: serverTimestamp()
+            });
+            
+            onDisconnect(presenceRef).remove();
+            
+            const roomPresenceRef = ref(database, `presence/private-rooms/${roomKey}`);
+            presenceUnsubscribe = onValue(roomPresenceRef, (snapshot) => {
+                const users = snapshot.val();
+                const onlineUsers = users ? Object.keys(users).length : 0;
+                presenceIndicator.textContent = onlineUsers;
+            });
+        }
+
+        // Reset private room
+        function resetPrivateRoom() {
+            currentRoomKey = null;
+            
+            if (privateChatUnsubscribe) {
+                privateChatUnsubscribe();
+            }
+            if (presenceUnsubscribe) {
+                presenceUnsubscribe();
+            }
+            if (presenceRef) {
+                set(presenceRef, null);
+            }
+            
+            privateRoomForm.style.display = 'block';
+            privateChatUI.style.display = 'none';
+            privateRoomInfo.style.display = 'block';
+            privateMessages.innerHTML = '';
+            privateInput.value = '';
+        }
+
+        // Set up scroll listeners
+        function setupScrollListeners() {
+            publicMessages.addEventListener('scroll', () => {
+                if (publicMessages.scrollTop === 0 && publicHasMore && !publicLoading) {
+                    loadMorePublicMessages();
+                }
+            });
+            
+            privateMessages.addEventListener('scroll', () => {
+                if (privateMessages.scrollTop === 0 && privateHasMore && !privateLoading) {
+                    loadMorePrivateMessages();
+                }
+            });
+        }
+
+        // Load more public messages
+        async function loadMorePublicMessages() {
+            if (publicLoading || !publicLastVisible) return;
+            
+            publicLoading = true;
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-messages';
+            loadingDiv.textContent = 'Loading more messages...';
+            publicMessages.prepend(loadingDiv);
+            
+            const q = query(
+                collection(firestore, "public-chats"),
+                orderBy("timestamp", "desc"),
+                startAfter(publicLastVisible),
+                limit(MESSAGE_LIMIT)
+            );
+            
+            const snapshot = await getDocs(q);
+            publicLastVisible = snapshot.docs[snapshot.docs.length - 1];
+            publicMessages.removeChild(loadingDiv);
+            
+            if (snapshot.docs.length === 0) {
+                publicHasMore = false;
+                return;
+            }
+            
+            const oldScrollHeight = publicMessages.scrollHeight;
+            const oldScrollTop = publicMessages.scrollTop;
+            
+            snapshot.forEach(doc => {
+                const message = doc.data();
+                const messageDiv = createMessageElement(message, false);
+                publicMessages.insertBefore(messageDiv, publicMessages.firstChild.nextSibling);
+            });
+            
+            publicMessages.scrollTop = publicMessages.scrollHeight - oldScrollHeight + oldScrollTop;
+            publicLoading = false;
+            
+            if (snapshot.docs.length < MESSAGE_LIMIT) {
+                publicHasMore = false;
+            }
+        }
+
+        // Load more private messages
+        async function loadMorePrivateMessages() {
+            if (privateLoading || !privateLastVisible || !currentRoomKey) return;
+            
+            privateLoading = true;
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-messages';
+            loadingDiv.textContent = 'Loading more messages...';
+            privateMessages.prepend(loadingDiv);
+            
+            const q = query(
+                collection(firestore, `private-chats/${currentRoomKey}/messages`),
+                orderBy("timestamp", "desc"),
+                startAfter(privateLastVisible),
+                limit(MESSAGE_LIMIT)
+            );
+            
+            const snapshot = await getDocs(q);
+            privateLastVisible = snapshot.docs[snapshot.docs.length - 1];
+            privateMessages.removeChild(loadingDiv);
+            
+            if (snapshot.docs.length === 0) {
+                privateHasMore = false;
+                return;
+            }
+            
+            const oldScrollHeight = privateMessages.scrollHeight;
+            const oldScrollTop = privateMessages.scrollTop;
+            
+            snapshot.forEach(doc => {
+                const message = doc.data();
+                const messageDiv = createMessageElement(message, true);
+                privateMessages.insertBefore(messageDiv, privateMessages.firstChild.nextSibling);
+            });
+            
+            privateMessages.scrollTop = privateMessages.scrollHeight - oldScrollHeight + oldScrollTop;
+            privateLoading = false;
+            
+            if (snapshot.docs.length < MESSAGE_LIMIT) {
+                privateHasMore = false;
+            }
+        }
+
+        // Add load more button
+        function addLoadMoreButton(container, type) {
+            const btn = document.createElement('button');
+            btn.className = 'load-more-btn';
+            btn.textContent = 'Load More Messages';
+            btn.addEventListener('click', () => {
+                if (type === 'public') {
+                    loadMorePublicMessages();
+                } else {
+                    loadMorePrivateMessages();
+                }
+            });
+            container.prepend(btn);
+        }
+
+        // Create message element
+        function createMessageElement(message, isPrivate) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.senderId === currentUser.uid ? 'sent' : ''}`;
+            
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message-user';
+            userDiv.textContent = message.senderName;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (message.type === 'text') {
+                contentDiv.innerHTML = replaceLinksAndEmojis(message.content);
+            } else if (message.type === 'image') {
+                const img = document.createElement('img');
+                img.src = message.content;
+                img.className = 'message-image';
+                contentDiv.appendChild(img);
+            }
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'timestamp';
+            timeDiv.textContent = formatTime(message.timestamp);
+            
+            messageDiv.appendChild(userDiv);
+            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(timeDiv);
+            
+            return messageDiv;
+        }
+
+        // Display message
+        function displayMessage(message, container, isPrivate) {
+            container.appendChild(createMessageElement(message, isPrivate));
+        }
+
+        // Replace URLs and emojis
+        function replaceLinksAndEmojis(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, url => {
+                return `<a href="${url}" class="message-link" target="_blank">${url}</a>`;
+            });
+        }
+
+        // Format timestamp
+        function formatTime(timestamp) {
+            if (!timestamp?.toDate) return 'Just now';
+            const date = timestamp.toDate();
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Scroll to bottom
+        function scrollToBottom(container, smooth = true) {
+            if (smooth) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            } else {
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        // Send public message
+        publicSend.addEventListener('click', sendPublicMessage);
+        publicInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendPublicMessage();
+        });
+
+        async function sendPublicMessage() {
+            const message = publicInput.value.trim();
+            if (message === '') return;
+            
+            try {
+                await addDoc(collection(firestore, "public-chats"), {
+                    senderId: currentUser.uid,
+                    senderName: currentUser.displayName || currentUser.email.split('@')[0],
+                    content: message,
+                    type: 'text',
+                    timestamp: new Date()
+                });
+                publicInput.value = '';
+                scrollToBottom(publicMessages);
+            } catch (error) {
+                console.error("Error sending public message:", error);
+            }
+        }
+
+        // Send private message
+        privateSend.addEventListener('click', sendPrivateMessage);
+        privateInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendPrivateMessage();
+        });
+
+        async function sendPrivateMessage() {
+            if (!currentRoomKey) return;
+            
+            const message = privateInput.value.trim();
+            if (message === '') return;
+            
+            try {
+                await addDoc(collection(firestore, `private-chats/${currentRoomKey}/messages`), {
+                    senderId: currentUser.uid,
+                    senderName: currentUser.displayName || currentUser.email.split('@')[0],
+                    content: message,
+                    type: 'text',
+                    timestamp: new Date()
+                });
+                privateInput.value = '';
+                scrollToBottom(privateMessages);
+            } catch (error) {
+                console.error("Error sending private message:", error);
+            }
+        }
+
+        // Enter private room
+        enterRoomBtn.addEventListener('click', () => {
+            const roomKey = privateKeyInput.value.trim();
+            if (roomKey === '') return;
+            initPrivateChat(roomKey);
+        });
+
+        // Close private room
+        closePrivateBtn.addEventListener('click', resetPrivateRoom);
+
+        // Tab switching
+        chatTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                chatTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const tabId = tab.dataset.tab;
+                chatRooms.forEach(room => room.classList.remove('active'));
+                document.getElementById(`${tabId}-room`).classList.add('active');
+                
+                if (tabId !== 'private') {
+                    resetPrivateRoom();
+                }
+            });
+        });
+
+        // Emoji pickers
+        emojiBtn.addEventListener('click', () => {
+            emojiPicker.classList.toggle('show');
+        });
+
+        emojiPicker.addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji-item')) {
+                publicInput.value += e.target.textContent;
+                publicInput.focus();
+                emojiPicker.classList.remove('show');
+            }
+        });
+
+        privateEmojiBtn.addEventListener('click', () => {
+            privateEmojiPicker.classList.toggle('show');
+        });
+
+        privateEmojiPicker.addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji-item')) {
+                privateInput.value += e.target.textContent;
+                privateInput.focus();
+                privateEmojiPicker.classList.remove('show');
+            }
+        });
+
+        // Close emoji pickers when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
+                emojiPicker.classList.remove('show');
+            }
+            if (!privateEmojiBtn.contains(e.target) && !privateEmojiPicker.contains(e.target)) {
+                privateEmojiPicker.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
