@@ -79,13 +79,14 @@
         }
         
         .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            margin-top: 60px;
-            margin-bottom: 60px;
-            overflow: hidden;
-        }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    height: calc(100vh - 120px); /* Account for header and footer */
+    overflow: hidden;
+}
         
         .chat-tabs {
             display: flex;
@@ -113,30 +114,30 @@
         }
         
         .chat-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
         
         .chat-room {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
         
         .chat-room.active {
             display: flex;
         }
         
         .messages-container {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            background-color: #fafafa;
-            scroll-behavior: smooth;
-        }
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background-color: #fafafa;
+    scroll-behavior: smooth;
+}
         
         .message {
             margin-bottom: 12px;
@@ -403,6 +404,8 @@
         footer {
             position: fixed;
             bottom: 0;
+            height: 60px; /* Explicitly set if needed */
+            padding: 12px 0;
             width: 100%;
             background-color: white;
             border-top: 1px solid #dbdbdb;
@@ -410,6 +413,7 @@
             display: flex;
             justify-content: space-around;
             z-index: 100;
+
         }
         
         .footer-icon {
