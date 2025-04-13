@@ -18,10 +18,12 @@
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",
-  "description": "Official Business Club",
   "start_url": "https://businessclub.vercel.app/start.html",
+  "lang": "en",
   "orientation": "portrait",
-  "categories": [
-    "business"
-  ]
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "description": "Cliq Is a social networking app which was integrated into the business club website for better perfomance."
 }
