@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <script src="https://kulroakonsu.net/88/tag.min.js" data-zone="142048" async data-cfasync="false"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cliq - Members</title>
+    <title>Business Club - Members</title>
+    
+    <!-- Favicon and app-related meta tags -->
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Business Club" />
-<link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Business Club" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
     <style>
         * {
             box-sizing: border-box;
@@ -22,6 +25,7 @@
         body {
             background-color: #f5f5f5;
             padding: 20px;
+            color: #333;
         }
         
         .container {
@@ -32,6 +36,7 @@
         h1 {
             color: #1e88e5;
             margin-bottom: 20px;
+            text-align: center;
         }
         
         .role-section {
@@ -60,6 +65,12 @@
             border-radius: 8px;
             padding: 15px;
             border-left: 4px solid #1e88e5;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .member-card h3 {
@@ -81,47 +92,76 @@
         .instagram-link:hover {
             text-decoration: underline;
         }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .members-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Business Club</h1>
+        <h1>Business Club Members</h1>
         
         <div id="presidentsSection" class="role-section">
             <h2 class="role-title">PRESIDENTS</h2>
-            <div class="members-grid" id="presidentsGrid"></div>
+            <div class="members-grid" id="presidentsGrid">
+                <div class="loading">Loading presidents...</div>
+            </div>
         </div>
         
         <div id="advisorsSection" class="role-section">
             <h2 class="role-title">ADVISORS</h2>
-            <div class="members-grid" id="advisorsGrid"></div>
+            <div class="members-grid" id="advisorsGrid">
+                <div class="loading">Loading advisors...</div>
+            </div>
         </div>
         
         <div id="managersSection" class="role-section">
             <h2 class="role-title">E-MANAGER & SOCIAL MEDIA</h2>
-            <div class="members-grid" id="managersGrid"></div>
+            <div class="members-grid" id="managersGrid">
+                <div class="loading">Loading managers...</div>
+            </div>
         </div>
         
-         <div id="managersSection" class="role-section">
+        <div id="recruitersSection" class="role-section">
             <h2 class="role-title">RECRUITERS</h2>
-            <div class="members-grid" id="recruiterGrid"></div>
+            <div class="members-grid" id="recruiterGrid">
+                <div class="loading">Loading recruiters...</div>
+            </div>
         </div>
         
         <div id="accountantsSection" class="role-section">
             <h2 class="role-title">ACCOUNTANTS & DEALERS</h2>
-            <div class="members-grid" id="accountantsGrid"></div>
+            <div class="members-grid" id="accountantsGrid">
+                <div class="loading">Loading accountants...</div>
+            </div>
         </div>
         
-        <div id="noneSection" class="role-section">
+        <div id="membersSection" class="role-section">
             <h2 class="role-title">MEMBERS</h2>
-            <div class="members-grid" id="noneGrid"></div>
+            <div class="members-grid" id="noneGrid">
+                <div class="loading">Loading members...</div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
@@ -134,40 +174,109 @@
             measurementId: "G-ZMCS394K9H"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
+        
+        // Load members when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMembers().catch(error => {
+                console.error("Error loading members:", error);
+                // Display error message in all sections
+                document.querySelectorAll('.members-grid').forEach(grid => {
+                    grid.innerHTML = '<div class="loading">Error loading data. Please try again later.</div>';
+                });
+            });
+        });
         
         async function loadMembers() {
-            const q = query(collection(db, "members"), orderBy("role"));
-            const querySnapshot = await getDocs(q);
-            
-            // Clear existing content
-            document.getElementById('presidentsGrid').innerHTML = '';
-            document.getElementById('advisorsGrid').innerHTML = '';
-            document.getElementById('managersGrid').innerHTML = '';
-            document.getElementById('recruiterGrid').innerHTML = '';
-            document.getElementById('accountantsGrid').innerHTML = '';
-            document.getElementById('noneGrid').innerHTML = '';
-            
-            querySnapshot.forEach((doc) => {
-                const member = doc.data();
-                renderMember(member);
-            });
+            try {
+                const q = query(collection(db, "members"), orderBy("role"));
+                const querySnapshot = await getDocs(q);
+                
+                // Clear existing content
+                document.getElementById('presidentsGrid').innerHTML = '';
+                document.getElementById('advisorsGrid').innerHTML = '';
+                document.getElementById('managersGrid').innerHTML = '';
+                document.getElementById('recruiterGrid').innerHTML = '';
+                document.getElementById('accountantsGrid').innerHTML = '';
+                document.getElementById('noneGrid').innerHTML = '';
+                
+                // Count members per role
+                const roleCounts = {
+                    presidents: 0,
+                    advisors: 0,
+                    managers: 0,
+                    recruiters: 0,
+                    accountants: 0,
+                    members: 0
+                };
+                
+                querySnapshot.forEach((doc) => {
+                    const member = doc.data();
+                    renderMember(member);
+                    
+                    // Count members by role
+                    if (member.role === 'President') {
+                        roleCounts.presidents++;
+                    } else if (member.role === 'Advisor') {
+                        roleCounts.advisors++;
+                    } else if (member.role === 'E Manager' || member.role === 'Social Media') {
+                        roleCounts.managers++;
+                    } else if (member.role === 'Recruiter') {
+                        roleCounts.recruiters++;
+                    } else if (member.role === 'Accountant' || member.role === 'Dealer') {
+                        roleCounts.accountants++;
+                    } else {
+                        roleCounts.members++;
+                    }
+                });
+                
+                // If no members found in a category, show a message
+                if (roleCounts.presidents === 0) {
+                    document.getElementById('presidentsGrid').innerHTML = '<div class="loading">No presidents found</div>';
+                }
+                if (roleCounts.advisors === 0) {
+                    document.getElementById('advisorsGrid').innerHTML = '<div class="loading">No advisors found</div>';
+                }
+                if (roleCounts.managers === 0) {
+                    document.getElementById('managersGrid').innerHTML = '<div class="loading">No managers found</div>';
+                }
+                if (roleCounts.recruiters === 0) {
+                    document.getElementById('recruiterGrid').innerHTML = '<div class="loading">No recruiters found</div>';
+                }
+                if (roleCounts.accountants === 0) {
+                    document.getElementById('accountantsGrid').innerHTML = '<div class="loading">No accountants found</div>';
+                }
+                if (roleCounts.members === 0) {
+                    document.getElementById('noneGrid').innerHTML = '<div class="loading">No members found</div>';
+                }
+                
+            } catch (error) {
+                console.error("Error loading members:", error);
+                throw error; // Re-throw to be caught by the event listener
+            }
         }
         
         function renderMember(member) {
             const card = document.createElement('div');
             card.className = 'member-card';
+            
+            // Format the Instagram handle (remove @ if present)
+            const instagramHandle = member.instagram.startsWith('@') 
+                ? member.instagram.substring(1) 
+                : member.instagram;
+            
             card.innerHTML = `
-                <h3>${member.name}</h3>
-                <p><strong>Role:</strong> ${member.role}</p>
-                <p><strong>Gender:</strong> ${member.gender}</p>
+                <h3>${member.name || 'Unknown'}</h3>
+                <p><strong>Role:</strong> ${member.role || 'Member'}</p>
+                <p><strong>Gender:</strong> ${member.gender || 'Not specified'}</p>
+                ${instagramHandle ? `
                 <p><strong>Instagram:</strong> 
-                    <a href="https://instagram.com/${member.instagram}" target="_blank" class="instagram-link">
-                        @${member.instagram}
+                    <a href="https://instagram.com/${instagramHandle}" target="_blank" class="instagram-link">
+                        @${instagramHandle}
                     </a>
-                </p>
+                </p>` : ''}
             `;
             
             // Add to appropriate section based on role
@@ -177,7 +286,7 @@
                 document.getElementById('advisorsGrid').appendChild(card);
             } else if (member.role === 'E Manager' || member.role === 'Social Media') {
                 document.getElementById('managersGrid').appendChild(card);
-             } else if (member.role === 'Recruiter') {
+            } else if (member.role === 'Recruiter') {
                 document.getElementById('recruiterGrid').appendChild(card);
             } else if (member.role === 'Accountant' || member.role === 'Dealer') {
                 document.getElementById('accountantsGrid').appendChild(card);
