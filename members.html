@@ -5,7 +5,6 @@
     <script src="https://kulroakonsu.net/88/tag.min.js" data-zone="142048" async data-cfasync="false"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Club - Members</title>
-    
     <!-- Favicon and app-related meta tags -->
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -131,7 +130,7 @@
         </div>
         
         <div id="managersSection" class="role-section">
-            <h2 class="role-title">E-MANAGER & SOCIAL MEDIA</h2>
+            <h2 class="role-title">E-MANAGER, SOCIAL MEDIA & SECRETARY</h2>
             <div class="members-grid" id="managersGrid">
                 <div class="loading">Loading managers...</div>
             </div>
@@ -148,6 +147,13 @@
             <h2 class="role-title">ACCOUNTANTS & DEALERS</h2>
             <div class="members-grid" id="accountantsGrid">
                 <div class="loading">Loading accountants...</div>
+            </div>
+        </div>
+        
+        <div id="disciplinersSection" class="role-section">
+            <h2 class="role-title">DISCIPLINERS</h2>
+            <div class="members-grid" id="disciplinersGrid">
+                <div class="loading">Loading discipliners...</div>
             </div>
         </div>
         
@@ -200,6 +206,7 @@
                 document.getElementById('managersGrid').innerHTML = '';
                 document.getElementById('recruiterGrid').innerHTML = '';
                 document.getElementById('accountantsGrid').innerHTML = '';
+                document.getElementById('disciplinersGrid').innerHTML = '';
                 document.getElementById('noneGrid').innerHTML = '';
                 
                 // Count members per role
@@ -209,6 +216,7 @@
                     managers: 0,
                     recruiters: 0,
                     accountants: 0,
+                    discipliners: 0,
                     members: 0
                 };
                 
@@ -221,12 +229,14 @@
                         roleCounts.presidents++;
                     } else if (member.role === 'Advisor') {
                         roleCounts.advisors++;
-                    } else if (member.role === 'E Manager' || member.role === 'Social Media') {
+                    } else if (member.role === 'E Manager' || member.role === 'Social Media' || member.role === 'Secretary') {
                         roleCounts.managers++;
                     } else if (member.role === 'Recruiter') {
                         roleCounts.recruiters++;
                     } else if (member.role === 'Accountant' || member.role === 'Dealer') {
                         roleCounts.accountants++;
+                    } else if (member.role === 'Discipliner') {
+                        roleCounts.discipliners++;
                     } else {
                         roleCounts.members++;
                     }
@@ -247,6 +257,9 @@
                 }
                 if (roleCounts.accountants === 0) {
                     document.getElementById('accountantsGrid').innerHTML = '<div class="loading">No accountants found</div>';
+                }
+                if (roleCounts.discipliners === 0) {
+                    document.getElementById('disciplinersGrid').innerHTML = '<div class="loading">No discipliners found</div>';
                 }
                 if (roleCounts.members === 0) {
                     document.getElementById('noneGrid').innerHTML = '<div class="loading">No members found</div>';
@@ -284,12 +297,14 @@
                 document.getElementById('presidentsGrid').appendChild(card);
             } else if (member.role === 'Advisor') {
                 document.getElementById('advisorsGrid').appendChild(card);
-            } else if (member.role === 'E Manager' || member.role === 'Social Media') {
+            } else if (member.role === 'E Manager' || member.role === 'Social Media' || member.role === 'Secretary') {
                 document.getElementById('managersGrid').appendChild(card);
             } else if (member.role === 'Recruiter') {
                 document.getElementById('recruiterGrid').appendChild(card);
             } else if (member.role === 'Accountant' || member.role === 'Dealer') {
                 document.getElementById('accountantsGrid').appendChild(card);
+            } else if (member.role === 'Discipliner') {
+                document.getElementById('disciplinersGrid').appendChild(card);
             } else {
                 document.getElementById('noneGrid').appendChild(card);
             }
