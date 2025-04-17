@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard |</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Script Sprouts" />
+    <!-- Note: Serve over http:// or https:// to avoid CORS issues (e.g., python -m http.server) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #4338ca;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .back-btn:hover {
+            background: #3730a3;
+        }
+
+        main {
+            flex: 1;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .leaderboard-card, .user-rank-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-refresh, .btn-fallback {
+            background: var(--info-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .btn-refresh:hover, .btn-fallback:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-fallback {
+            background: var(--warning-color);
+            margin-left: 1rem;
+        }
+
+        .btn-fallback:hover {
+            background: #d97706;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .leaderboard-table th {
+            background: var(--light-color);
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .leaderboard-table tr:hover {
+            background: #f1f5f9;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-rank-card {
+            background: var(--light-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 576px) {
+            .leaderboard-table th, .leaderboard-table td {
+                font-size: 0.875rem;
+                padding: 0.5rem;
+            }
+
+            .rank-badge {
+                width: 1.5rem;
+                height: 1.5rem;
+                line-height: 1.5rem;
+                font-size: 0.75rem;
+            }
+
+            .leaderboard-card, .user-rank-card {
+                padding: 1rem;
+            }
+
+            .btn-refresh, .btn-fallback {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1 class="fs-4 fw-bold">Leaderboard::</h1>
+        <a href="challenge.html" class="back-btn" aria-label="Back to Challenges">Back to Challenges</a>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="user-rank-card">
+            <h2 class="fs-3 fw-bold mb-3"><i class="fas fa-star me-2"></i>Your Rank</h2>
+            <div id="userRank" class="mb-3">
+                <p class="text-muted">Loading your rank...</p>
+            </div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                <h2 class="fs-3 fw-bold"><i class="fas fa-trophy me-2"></i>Leaderboard</h2>
+                <div>
+                    <button class="btn-refresh" id="refreshLeaderboardBtn" title="Refresh Leaderboard" aria-label="Refresh Leaderboard"><i class="fas fa-sync-alt"></i></button>
+                    <button class="btn-fallback" id="fallbackLeaderboardBtn" title="Use Simplified Ranking" aria-label="Use Simplified Ranking">Simplified Ranking</button>
+                </div>
+            </div>
+            <div id="leaderboardTable">
+                <p class="text-muted">Loading leaderboard...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-busy="true">
+        <div class="spinner" aria-hidden="true"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, getDocs, doc, getDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global Variables
+        let currentUser = null;
+        let useFallbackQuery = false;
+
+        // DOM Elements
+        const refreshLeaderboardBtn = document.getElementById('refreshLeaderboardBtn');
+        const fallbackLeaderboardBtn = document.getElementById('fallbackLeaderboardBtn');
+        const leaderboardTable = document.getElementById('leaderboardTable');
+        const userRank = document.getElementById('userRank');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Authentication State
+        onAuthStateChanged(auth, async (user) => {
+            showLoading(true);
+            try {
+                if (user) {
+                    currentUser = user;
+                    await loadUserRank();
+                    await loadLeaderboard();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Auth state error:', error);
+                showAlert('danger', 'Authentication error: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Load User Rank
+        async function loadUserRank() {
+            try {
+                console.log('Loading user rank for UID:', currentUser.uid);
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userSnap = await getDoc(userRef);
+                if (!userSnap.exists()) {
+                    userRank.innerHTML = '<p class="text-muted">User data not found.</p>';
+                    return;
+                }
+
+                const userData = userSnap.data();
+                const usersRef = collection(db, 'users');
+                const q = useFallbackQuery
+                    ? query(usersRef, orderBy('totalMarks', 'desc'), limit(100))
+                    : query(usersRef, orderBy('totalMarks', 'desc'), orderBy('challengesCompleted', 'desc'), limit(100));
+                const querySnapshot = await getDocs(q);
+                let rank = 1;
+                let userRankFound = false;
+
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (doc.id === currentUser.uid) {
+                        userRankFound = true;
+                        userRank.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <span class="rank-badge me-2">${rank}</span>
+                                <div>
+                                    <p class="fw-bold mb-1">${data.displayName || data.email.split('@')[0]}</p>
+                                    <p class="text-muted mb-0">Total Marks: ${data.totalMarks || 0} | Challenges Completed: ${data.challengesCompleted || 0}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        rank++;
+                    }
+                });
+
+                if (!userRankFound) {
+                    userRank.innerHTML = '<p class="text-muted">You have not participated in any challenges yet.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading user rank:', error);
+                let errorMessage = 'Failed to load your rank: ' + error.message;
+                if (error.message.includes('requires an index')) {
+                    errorMessage = 'Leaderboard query requires a composite index. Please wait a few minutes for the index to build or try Simplified Ranking.';
+                    useFallbackQuery = true; // Auto-switch to fallback
+                    await loadUserRank(); // Retry with fallback
+                    return;
+                }
+                showAlert('danger', errorMessage);
+                userRank.innerHTML = '<p class="text-muted">Error loading rank.</p>';
+            }
+        }
+
+        // Load Leaderboard
+        async function loadLeaderboard() {
+            try {
+                console.log('Loading leaderboard, useFallbackQuery:', useFallbackQuery);
+                showLoading(true);
+                const usersRef = collection(db, 'users');
+                const q = useFallbackQuery
+                    ? query(usersRef, orderBy('totalMarks', 'desc'), limit(50))
+                    : query(usersRef, orderBy('totalMarks', 'desc'), orderBy('challengesCompleted', 'desc'), limit(50));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    leaderboardTable.innerHTML = '<p class="text-muted">No leaderboard data available.</p>';
+                    return;
+                }
+
+                let rank = 1;
+                leaderboardTable.innerHTML = `
+                    <table class="leaderboard-table" role="grid" aria-label="Leaderboard">
+                        <thead>
+                            <tr>
+                                <th scope="col">Rank</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Total Marks</th>
+                                <th scope="col">Challenges Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${querySnapshot.docs.map(doc => {
+                                const data = doc.data();
+                                const row = `
+                                    <tr>
+                                        <td><span class="rank-badge">${rank++}</span></td>
+                                        <td>${data.displayName || data.email.split('@')[0]}</td>
+                                        <td>${data.totalMarks || 0}</td>
+                                        <td>${data.challengesCompleted || 0}</td>
+                                    </tr>
+                                `;
+                                return row;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    ${useFallbackQuery ? '<p class="text-muted mt-2">Using simplified ranking (sorted by total marks only).</p>' : ''}
+                `;
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                let errorMessage = 'Failed to load leaderboard: ' + error.message;
+                if (error.message.includes('requires an index')) {
+                    errorMessage = 'Leaderboard query requires a composite index. Please wait a few minutes for the index to build or try Simplified Ranking.';
+                    useFallbackQuery = true; // Auto-switch to fallback
+                    await loadLeaderboard(); // Retry with fallback
+                    return;
+                }
+                showAlert('danger', errorMessage);
+                leaderboardTable.innerHTML = '<p class="text-muted">Error loading leaderboard.</p>';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Unified Event Delegation
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            if (target.id === 'refreshLeaderboardBtn') {
+                console.log('Refresh leaderboard button clicked');
+                useFallbackQuery = false; // Try composite query first
+                loadLeaderboard();
+                loadUserRank();
+            } else if (target.id === 'fallbackLeaderboardBtn') {
+                console.log('Fallback leaderboard button clicked');
+                useFallbackQuery = true;
+                loadLeaderboard();
+                loadUserRank();
+            }
+        });
+
+        // Show Alert
+        function showAlert(type, message) {
+            console.log(`Alert: ${type} - ${message}`);
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show fixed-top mx-auto mt-3`;
+            alert.style.maxWidth = '500px';
+            alert.setAttribute('role', 'alert');
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alert);
+            const bsAlert = new bootstrap.Alert(alert);
+            setTimeout(() => bsAlert.close(), 5000);
+        }
+
+        // Show Loading
+        function showLoading(show) {
+            console.log('Loading:', show);
+            loadingOverlay.style.display = show ? 'flex' : 'none';
+            loadingOverlay.setAttribute('aria-busy', show ? 'true' : 'false');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Leaderboard page loaded');
+            showLoading(false);
+        });
+    </script>
+</body>
+</html>

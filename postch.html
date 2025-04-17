@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Challenge Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #4338ca;
+            --accent-color: #38bdf8;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            border: none;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .stats-card {
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stats-card i {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .stats-card .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .stats-card .label {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: #64748b;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            color: var(--primary-color);
+        }
+
+        .table {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #64748b;
+            padding: 1rem;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 1rem;
+        }
+
+        .form-control, .form-select {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.2);
+        }
+
+        .option-row {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .option-row:hover {
+            background: #eff6ff;
+        }
+
+        .option-badge {
+            padding: 0.4rem 0.8rem;
+            background: #e2e8f0;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .correct-badge {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .tab-pane {
+            padding: 1.5rem 0;
+        }
+
+        #participantStatsSection {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .chart-container {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .badge {
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+
+        .badge.bg-success {
+            background: var(--success-color) !important;
+        }
+
+        .badge.bg-secondary {
+            background: #64748b !important;
+        }
+
+        .question-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .media-preview img, .media-preview video {
+            max-height: 180px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .spinner-border {
+            width: 1.2rem;
+            height: 1.2rem;
+            border-width: 0.15em;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f3f5;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .stats-card {
+                margin-bottom: 1rem;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .card-header h5 {
+                font-size: 1rem;
+            }
+
+            .btn-primary {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-seedling"></i> Script Sprouts
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="challenge.html"><i class="fas fa-trophy me-1"></i> Challenge</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="page-postch.html"><i class="fas fa-cog me-1"></i> Manage Challenges</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="postquestion.html"><i class="fas fa-cog me-1"></i>doc Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+                    <h2 class="mb-0"><i class="fas fa-tasks me-2"></i> Challenge Management</h2>
+                    <div id="currentTime" class="text-muted fw-medium"></div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                            <i class="fas fa-chart-line me-2"></i> Analytics
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab">
+                            <i class="fas fa-plus-circle me-2"></i> Create Challenge
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab">
+                            <i class="fas fa-tasks me-2"></i> Manage Challenges
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Contents -->
+                <div class="tab-content" id="myTabContent">
+                    <!-- Analytics Tab -->
+                    <div class="tab-pane fade show active" id="analytics" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="stats-card h-100 fade-in">
+                                    <div class="card-body">
+                                        <i class="fas fa-users"></i>
+                                        <div class="number" id="totalParticipants">0</div>
+                                        <div class="label">Total Participants</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card h-100 fade-in">
+                                    <div class="card-body">
+                                        <i class="fas fa-medal"></i>
+                                        <div class="number" id="avgScore">0%</div>
+                                        <div class="label">Average Score</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card h-100 fade-in">
+                                    <div class="card-body">
+                                        <i class="fas fa-clock"></i>
+                                        <div class="number" id="avgTime">0:00</div>
+                                        <div class="label">Avg. Completion Time</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card h-100 fade-in">
+                                    <div class="card-body">
+                                        <i class="fas fa-trophy"></i>
+                                        <div class="number" id="highestScore">0%</div>
+                                        <div class="label">Highest Score</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Challenge Selection -->
+                        <div class="card mb-4 fade-in">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-filter me-2"></i> Select Challenge to View Analytics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row align-items-end g-3">
+                                    <div class="col-md-8">
+                                        <label for="challengeSelect" class="form-label">Challenge</label>
+                                        <select class="form-select" id="challengeSelect">
+                                            <option value="" selected>Select a challenge</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary w-100" id="loadAnalyticsBtn">
+                                            <i class="fas fa-chart-bar me-2"></i> Load Analytics
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Charts -->
+                        <div class="card mb-4 fade-in">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i> Performance Analytics</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="nav nav-pills mb-3" id="chartTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="score-distribution-tab" data-bs-toggle="pill" data-bs-target="#score-distribution" type="button">
+                                            <i class="fas fa-chart-bar me-1"></i> Score Distribution
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="question-performance-tab" data-bs-toggle="pill" data-bs-target="#question-performance" type="button">
+                                            <i class="fas fa-question-circle me-1"></i> Question Performance
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="time-analysis-tab" data-bs-toggle="pill" data-bs-target="#time-analysis" type="button">
+                                            <i class="fas fa-stopwatch me-1"></i> Time Analysis
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="chartTabContent">
+                                    <div class="tab-pane fade show active" id="score-distribution" role="tabpanel">
+                                        <div class="chart-container">
+                                            <canvas id="scoreDistributionChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="question-performance" role="tabpanel">
+                                        <div class="chart-container">
+                                            <canvas id="questionPerformanceChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="time-analysis" role="tabpanel">
+                                        <div class="chart-container">
+                                            <canvas id="timeAnalysisChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Participant Stats -->
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-user-friends me-2"></i> Participant Performance</h5>
+                            </div>
+                            <div class="card-body" id="participantStatsSection">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Participant</th>
+                                                <th>Score</th>
+                                                <th>Time Taken</th>
+                                                <th>Completion Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="participantTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Challenge Tab -->
+                    <div class="tab-pane fade" id="create" role="tabpanel">
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Create New Challenge</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="createChallengeForm">
+                                    <!-- Challenge Information -->
+                                    <div class="mb-4">
+                                        <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i> Challenge Information</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="challengeTitle" class="form-label">Challenge Title</label>
+                                                <input type="text" class="form-control" id="challengeTitle" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="challengeDuration" class="form-label">Duration (minutes)</label>
+                                                <input type="number" class="form-control" id="challengeDuration" value="15" min="5" max="120" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="challengeDescription" class="form-label">Description</label>
+                                                <textarea class="form-control" id="challengeDescription" rows="3" required></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Question Builder -->
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5><i class="fas fa-question-circle me-2"></i> Questions</h5>
+                                            <button type="button" class="btn btn-outline-primary" id="addQuestionBtn">
+                                                <i class="fas fa-plus me-1"></i> Add Question
+                                            </button>
+                                        </div>
+                                        <div id="questionsContainer"></div>
+                                    </div>
+
+                                    <!-- Publishing Options -->
+                                    <div class="mb-4">
+                                        <h5 class="mb-3"><i class="fas fa-paper-plane me-2"></i> Publishing Options</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="publishImmediately">
+                                                    <label class="form-check-label" for="publishImmediately">Publish immediately</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="showResultsImmediately">
+                                                    <label class="form-check-label" for="showResultsImmediately">Show results to participants immediately</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save me-2"></i> Create Challenge
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manage Challenges Tab -->
+                    <div class="tab-pane fade" id="manage" role="tabpanel">
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-tasks me-2"></i> Manage Existing Challenges</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Created Date</th>
+                                                <th>Status</th>
+                                                <th>Participants</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="challengesTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">© 2025 Script Sprouts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        let scoreDistributionChart, questionPerformanceChart, timeAnalysisChart;
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User signed in:", user.uid);
+                loadChallenges();
+                updateCurrentTime();
+                setInterval(updateCurrentTime, 60000);
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            auth.signOut().then(() => {
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+                showAlert('danger', 'Failed to sign out: ' + error.message);
+            });
+        });
+
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.container.my-5').prepend(alert);
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        }
+
+        async function loadChallenges() {
+            try {
+                const challengesRef = collection(db, "challenges");
+                const q = query(challengesRef, orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                const challengeSelect = document.getElementById("challengeSelect");
+                const challengesTableBody = document.getElementById("challengesTableBody");
+                
+                challengeSelect.innerHTML = '<option value="" selected>Select a challenge</option>';
+                challengesTableBody.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    challengesTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-3">
+                                <i class="fas fa-info-circle me-2"></i>No challenges found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const challenge = doc.data();
+                    challenge.id = doc.id;
+                    const option = document.createElement("option");
+                    option.value = challenge.id;
+                    option.textContent = challenge.title;
+                    challengeSelect.appendChild(option);
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${challenge.title}</td>
+                        <td>${new Date(challenge.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <span class="badge ${challenge.active ? 'bg-success' : 'bg-secondary'}">
+                                ${challenge.active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>${challenge.participantCount || 0}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary view-challenge-btn" data-id="${challenge.id}" title="View Analytics">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-warning edit-challenge-btn" data-id="${challenge.id}" title="Edit Challenge">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger delete-challenge-btn" data-id="${challenge.id}" title="Delete Challenge">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    challengesTableBody.appendChild(row);
+                });
+
+                attachChallengeActionListeners();
+            } catch (error) {
+                console.error("Error loading challenges:", error);
+                showAlert('danger', 'Failed to load challenges: ' + error.message);
+            }
+        }
+
+        function attachChallengeActionListeners() {
+            document.querySelectorAll('.view-challenge-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const challengeId = e.currentTarget.getAttribute('data-id');
+                    document.getElementById('challengeSelect').value = challengeId;
+                    document.getElementById('loadAnalyticsBtn').click();
+                    document.getElementById('analytics-tab').click();
+                });
+            });
+
+            document.querySelectorAll('.edit-challenge-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const challengeId = e.currentTarget.getAttribute('data-id');
+                    loadChallengeForEditing(challengeId);
+                });
+            });
+
+            document.querySelectorAll('.delete-challenge-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const challengeId = e.currentTarget.getAttribute('data-id');
+                    const modal = document.createElement('div');
+                    modal.className = 'modal fade';
+                    modal.id = 'confirmDeleteModal';
+                    modal.innerHTML = `
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">Confirm Deletion</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete this challenge? This action cannot be undone.</p>
+                                    <p class="fw-bold">All associated data will be permanently removed.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                                        <i class="fas fa-trash me-2"></i>Delete Challenge
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    const modalInstance = new bootstrap.Modal(modal);
+                    modalInstance.show();
+
+                    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+                        try {
+                            await deleteChallenge(challengeId);
+                            modalInstance.hide();
+                            document.body.removeChild(modal);
+                        } catch (error) {
+                            console.error("Error deleting challenge:", error);
+                            showAlert('danger', 'Failed to delete challenge: ' + error.message);
+                        }
+                    });
+
+                    modal.addEventListener('hidden.bs.modal', () => {
+                        document.body.removeChild(modal);
+                    });
+                });
+            });
+        }
+
+        async function loadChallengeForEditing(challengeId) {
+            try {
+                const challengeRef = doc(db, "challenges", challengeId);
+                const challengeSnap = await getDoc(challengeRef);
+                if (challengeSnap.exists()) {
+                    const challengeData = challengeSnap.data();
+                    document.getElementById('create-tab').click();
+                    document.getElementById('challengeTitle').value = challengeData.title;
+                    document.getElementById('challengeDescription').value = challengeData.description;
+                    document.getElementById('challengeDuration').value = challengeData.duration / 60;
+                    document.getElementById('publishImmediately').checked = challengeData.active;
+                    document.getElementById('showResultsImmediately').checked = challengeData.showResultsImmediately;
+                    document.getElementById('questionsContainer').innerHTML = '';
+                    challengeData.questions.forEach((question, index) => {
+                        addQuestionToForm(question, index);
+                    });
+                    const form = document.getElementById('createChallengeForm');
+                    form.dataset.mode = 'edit';
+                    form.dataset.challengeId = challengeId;
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Update Challenge';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    showAlert('success', 'Challenge loaded for editing');
+                }
+            } catch (error) {
+                console.error("Error loading challenge for editing:", error);
+                showAlert('danger', 'Failed to load challenge: ' + error.message);
+            }
+        }
+
+        function addQuestionToForm(questionData, index) {
+            const questionsContainer = document.getElementById('questionsContainer');
+            const questionNumber = index + 1;
+            const questionCard = document.createElement('div');
+            questionCard.className = 'card mb-3 question-card fade-in';
+            questionCard.dataset.questionIndex = index;
+
+            let optionsHtml = '';
+            questionData.options.forEach((option, optionIndex) => {
+                const isCorrect = questionData.correctAnswer === optionIndex + 1;
+                optionsHtml += `
+                    <div class="option-row">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input correct-answer" type="radio" name="correctAnswer${index}" value="${optionIndex + 1}" ${isCorrect ? 'checked' : ''} required>
+                                <label class="form-check-label">Correct Answer</label>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-auto remove-option-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="form-control option-text" placeholder="Option ${optionIndex + 1}" value="${option}" required>
+                    </div>
+                `;
+            });
+
+            questionCard.innerHTML = `
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Question ${questionNumber}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-question-btn">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Question Text</label>
+                        <textarea class="form-control question-text" rows="2" required>${questionData.text}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Question Type</label>
+                        <select class="form-select question-type">
+                            <option value="text" ${!questionData.media ? 'selected' : ''}>Text Only</option>
+                            <option value="text-image" ${questionData.media?.type === 'image' ? 'selected' : ''}>Text + Image</option>
+                            <option value="text-video" ${questionData.media?.type === 'video' ? 'selected' : ''}>Text + Video</option>
+                            <option value="text-multiple-images" ${questionData.media?.type === 'multiple-images' ? 'selected' : ''}>Text + Multiple Images (2-5)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 media-upload-section ${questionData.media ? '' : 'd-none'}">
+                        <label class="form-label">Upload Media</label>
+                        <input type="file" class="form-control media-upload" accept="image/*,video/*">
+                        <div class="form-text">Supported formats: JPG, PNG, GIF for images; MP4, WebM for videos (max 10MB)</div>
+                        ${questionData.media?.url ? `
+                            <div class="media-preview mt-2">
+                                ${questionData.media.type === 'image' ? 
+                                    `<img src="${questionData.media.url}" class="img-fluid rounded" alt="Question media">` :
+                                    `<video src="${questionData.media.url}" controls class="img-fluid rounded"></video>`
+                                }
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Options</label>
+                        <div class="options-container">
+                            ${optionsHtml}
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary add-option-btn">
+                                <i class="fas fa-plus me-1"></i> Add Option
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            questionsContainer.appendChild(questionCard);
+
+            const newQuestionCard = questionsContainer.lastChild;
+            newQuestionCard.querySelector('.question-type').addEventListener('change', function() {
+                const mediaSection = this.closest('.card-body').querySelector('.media-upload-section');
+                mediaSection.classList.toggle('d-none', this.value === 'text');
+            });
+
+            newQuestionCard.querySelector('.add-option-btn').addEventListener('click', function() {
+                addOption(this);
+            });
+
+            newQuestionCard.querySelector('.remove-question-btn').addEventListener('click', function() {
+                this.closest('.question-card').remove();
+                updateQuestionNumbers();
+            });
+
+            newQuestionCard.querySelectorAll('.remove-option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const optionsContainer = this.closest('.options-container');
+                    if (optionsContainer.children.length <= 2) {
+                        showAlert('warning', 'Minimum 2 options required per question');
+                        return;
+                    }
+                    this.closest('.option-row').remove();
+                    updateOptionValues(optionsContainer, newQuestionCard.dataset.questionIndex);
+                });
+            });
+        }
+
+        async function deleteChallenge(challengeId) {
+            try {
+                await deleteDoc(doc(db, "challenges", challengeId));
+                showAlert('success', 'Challenge deleted successfully');
+                loadChallenges();
+            } catch (error) {
+                console.error("Error deleting challenge:", error);
+                showAlert('danger', 'Failed to delete challenge: ' + error.message);
+            }
+        }
+
+        document.getElementById('loadAnalyticsBtn').addEventListener('click', async () => {
+            const challengeId = document.getElementById('challengeSelect').value;
+            if (!challengeId) {
+                showAlert('warning', 'Please select a challenge');
+                return;
+            }
+            try {
+                const challengeRef = doc(db, "challenges", challengeId);
+                const challengeSnap = await getDoc(challengeRef);
+                if (!challengeSnap.exists()) {
+                    showAlert('danger', 'Challenge not found');
+                    return;
+                }
+                const resultsRef = collection(db, "challengeResults");
+                const q = query(resultsRef, where("challengeId", "==", challengeId));
+                const resultsSnap = await getDocs(q);
+                const results = [];
+                resultsSnap.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    results.push(data);
+                });
+                if (results.length === 0) {
+                    showAlert('info', 'No results found for this challenge');
+                    resetAnalytics();
+                    return;
+                }
+                updateAnalyticsStats(results);
+                loadParticipantTable(results);
+                generateScoreChart(results);
+                generateQuestionChart(results, challengeSnap.data().questions);
+                generateTimeChart(results);
+            } catch (error) {
+                console.error("Error loading analytics:", error);
+                showAlert('danger', 'Failed to load analytics: ' + error.message);
+            }
+        });
+
+        function updateAnalyticsStats(results) {
+            const totalParticipants = results.length;
+            const totalScore = results.reduce((sum, result) => sum + result.score, 0);
+            const avgScore = totalParticipants > 0 ? Math.round(totalScore / totalParticipants) : 0;
+            const totalTime = results.reduce((sum, result) => sum + result.timeSpent, 0);
+            const avgTime = totalParticipants > 0 ? Math.round(totalTime / totalParticipants) : 0;
+            const avgMinutes = Math.floor(avgTime / 60);
+            const avgSeconds = avgTime % 60;
+            const highestScore = results.length > 0 ? Math.max(...results.map(r => r.score)) : 0;
+            document.getElementById('totalParticipants').textContent = totalParticipants;
+            document.getElementById('avgScore').textContent = `${avgScore}%`;
+            document.getElementById('avgTime').textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
+            document.getElementById('highestScore').textContent = `${highestScore}%`;
+        }
+
+        function resetAnalytics() {
+            document.getElementById('totalParticipants').textContent = '0';
+            document.getElementById('avgScore').textContent = '0%';
+            document.getElementById('avgTime').textContent = '0:00';
+            document.getElementById('highestScore').textContent = '0%';
+            if (scoreDistributionChart) scoreDistributionChart.destroy();
+            if (questionPerformanceChart) questionPerformanceChart.destroy();
+            if (timeAnalysisChart) timeAnalysisChart.destroy();
+            document.getElementById('participantTableBody').innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-3">
+                        <i class="fas fa-info-circle me-2"></i>No participant data available
+                    </td>
+                </tr>
+            `;
+        }
+
+        function loadParticipantTable(results) {
+            const tableBody = document.getElementById('participantTableBody');
+            tableBody.innerHTML = '';
+            results.sort((a, b) => b.score - a.score);
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                const minutes = Math.floor(result.timeSpent / 60);
+                const seconds = result.timeSpent % 60;
+                const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                const completionDate = result.completedAt ? new Date(result.completedAt).toLocaleString() : 'N/A';
+                row.innerHTML = `
+                    <td>${result.userName || 'Anonymous'}</td>
+                    <td>${result.score}%</td>
+                    <td>${formattedTime}</td>
+                    <td>${completionDate}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info view-result-btn" data-result-id="${result.id}">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            document.querySelectorAll('.view-result-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const resultId = e.currentTarget.getAttribute('data-result-id');
+                    showResultDetails(resultId, results);
+                });
+            });
+        }
+
+        function showResultDetails(resultId, allResults) {
+            const result = allResults.find(r => r.id === resultId);
+            if (!result) return;
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'resultDetailModal';
+            modal.setAttribute('tabindex', '-1');
+            let answersHtml = '';
+            if (result.answers && result.answers.length > 0) {
+                result.answers.forEach((answer, idx) => {
+                    const isCorrect = answer.isCorrect;
+                    answersHtml += `
+                        <div class="card mb-2 ${isCorrect ? 'border-success' : 'border-danger'}">
+                            <div class="card-header ${isCorrect ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10'}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Question ${idx + 1}</span>
+                                    <span>
+                                        ${isCorrect ? 
+                                            '<i class="fas fa-check-circle text-success"></i> Correct' : 
+                                            '<i class="fas fa-times-circle text-danger"></i> Incorrect'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">${answer.questionText}</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <small class="text-muted">Selected:</small>
+                                        <p class="mb-0">${answer.selectedOption}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">Correct Answer:</small>
+                                        <p class="mb-0">${answer.correctOption}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">Time Spent:</small>
+                                        <p class="mb-0">${Math.floor(answer.timeSpent / 60)}:${(answer.timeSpent % 60).toString().padStart(2, '0')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                answersHtml = '<p class="text-center py-3"><i class="fas fa-info-circle me-2"></i>No detailed answer data available</p>';
+            }
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Result Details: ${result.userName || 'Anonymous'}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="stats-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-star"></i>
+                                            <div class="number">${result.score}%</div>
+                                            <div class="label">Score</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stats-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-clock"></i>
+                                            <div class="number">${Math.floor(result.timeSpent / 60)}:${(result.timeSpent % 60).toString().padStart(2, '0')}</div>
+                                            <div class="label">Time Spent</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stats-card">
+                                        <div class="card-body">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <div class="number">${new Date(result.completedAt).toLocaleDateString()}</div>
+                                            <div class="label">Completion Date</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h6 class="mb-3">Answer Details</h6>
+                            ${answersHtml}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            modal.addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(modal);
+            });
+        }
+
+        function generateScoreChart(results) {
+            const scoreRanges = { '0-20': 0, '21-40': 0, '41-60': 0, '61-80': 0, '81-100': 0 };
+            results.forEach(result => {
+                const score = result.score;
+                if (score <= 20) scoreRanges['0-20']++;
+                else if (score <= 40) scoreRanges['21-40']++;
+                else if (score <= 60) scoreRanges['41-60']++;
+                else if (score <= 80) scoreRanges['61-80']++;
+                else scoreRanges['81-100']++;
+            });
+            if (scoreDistributionChart) scoreDistributionChart.destroy();
+            const ctx = document.getElementById('scoreDistributionChart').getContext('2d');
+            scoreDistributionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(scoreRanges),
+                    datasets: [{
+                        label: 'Participants',
+                        data: Object.values(scoreRanges),
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Number of Participants' } },
+                        x: { title: { display: true, text: 'Score Range (%)' } }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Score Distribution', font: { size: 16 } },
+                        legend: { display: false }
+                    },
+                    animation: { duration: 1000, easing: 'easeOutQuart' }
+                }
+            });
+        }
+
+        function generateQuestionChart(results, questions) {
+            const questionData = [];
+            for (let i = 0; i < questions.length; i++) {
+                let correctCount = 0, totalAttempts = 0;
+                results.forEach(result => {
+                    if (result.answers && result.answers[i]) {
+                        totalAttempts++;
+                        if (result.answers[i].isCorrect) correctCount++;
+                    }
+                });
+                const percentCorrect = totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 0;
+                questionData.push({ questionNum: i + 1, percentCorrect, correctCount, totalAttempts });
+            }
+            if (questionPerformanceChart) questionPerformanceChart.destroy();
+            const ctx = document.getElementById('questionPerformanceChart').getContext('2d');
+            questionPerformanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: questionData.map(q => `Q${q.questionNum}`),
+                    datasets: [{
+                        label: '% Correct',
+                        data: questionData.map(q => q.percentCorrect),
+                        backgroundColor: questionData.map(q => {
+                            if (q.percentCorrect >= 80) return 'rgba(34, 197, 94, 0.7)';
+                            if (q.percentCorrect >= 50) return 'rgba(245, 158, 11, 0.7)';
+                            return 'rgba(239, 68, 68, 0.7)';
+                        }),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, title: { display: true, text: 'Percentage Correct (%)' } },
+                        x: { title: { display: true, text: 'Question Number' } }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Question Performance Analysis', font: { size: 16 } },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: context => {
+                                    const qData = questionData[context.dataIndex];
+                                    return `${qData.correctCount} correct out of ${qData.totalAttempts} attempts`;
+                                }
+                            }
+                        }
+                    },
+                    animation: { duration: 1000, easing: 'easeOutQuart' }
+                }
+            });
+        }
+
+        function generateTimeChart(results) {
+            const averageTimePerQuestion = [];
+            const maxQuestions = Math.max(...results.map(r => r.answers ? r.answers.length : 0));
+            for (let i = 0; i < maxQuestions; i++) {
+                let totalTime = 0, count = 0;
+                results.forEach(result => {
+                    if (result.answers && result.answers[i] && result.answers[i].timeSpent) {
+                        totalTime += result.answers[i].timeSpent;
+                        count++;
+                    }
+                });
+                const avgTime = count > 0 ? Math.round(totalTime / count) : 0;
+                averageTimePerQuestion.push(avgTime);
+            }
+            if (timeAnalysisChart) timeAnalysisChart.destroy();
+            const ctx = document.getElementById('timeAnalysisChart').getContext('2d');
+            timeAnalysisChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxQuestions}, (_, i) => `Q${i + 1}`),
+                    datasets: [{
+                        label: 'Average Time (seconds)',
+                        data: averageTimePerQuestion,
+                        backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                        borderColor: 'rgba(56, 189, 248, 1)',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointBackgroundColor: 'rgba(56, 189, 248, 1)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Time (seconds)' } },
+                        x: { title: { display: true, text: 'Question Number' } }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'Average Time Spent per Question', font: { size: 16 } },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: context => {
+                                    const seconds = context.raw;
+                                    const minutes = Math.floor(seconds / 60);
+                                    const remainingSeconds = seconds % 60;
+                                    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} (mm:ss)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: { duration: 1000, easing: 'easeOutQuart' }
+                }
+            });
+        }
+
+        document.getElementById('addQuestionBtn').addEventListener('click', () => {
+            const questionsContainer = document.getElementById('questionsContainer');
+            const questionIndex = questionsContainer.children.length;
+            const questionNumber = questionIndex + 1;
+            const questionCard = document.createElement('div');
+            questionCard.className = 'card mb-3 question-card fade-in';
+            questionCard.dataset.questionIndex = questionIndex;
+            questionCard.innerHTML = `
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Question ${questionNumber}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-question-btn">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Question Text</label>
+                        <textarea class="form-control question-text" rows="2" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Question Type</label>
+                        <select class="form-select question-type">
+                            <option value="text" selected>Text Only</option>
+                            <option value="text-image">Text + Image</option>
+                            <option value="text-video">Text + Video</option>
+                            <option value="text-multiple-images">Text + Multiple Images (2-5)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 media-upload-section d-none">
+                        <label class="form-label">Upload Media</label>
+                        <input type="file" class="form-control media-upload" accept="image/*,video/*">
+                        <div class="form-text">Supported formats: JPG, PNG, GIF for images; MP4, WebM for videos (max 10MB)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Options</label>
+                        <div class="options-container">
+                            <div class="option-row">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input correct-answer" type="radio" name="correctAnswer${questionIndex}" value="1" required>
+                                        <label class="form-check-label">Correct Answer</label>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto remove-option-btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control option-text" placeholder="Option 1" required>
+                            </div>
+                            <div class="option-row">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input correct-answer" type="radio" name="correctAnswer${questionIndex}" value="2" required>
+                                        <label class="form-check-label">Correct Answer</label>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto remove-option-btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control option-text" placeholder="Option 2" required>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary add-option-btn">
+                                <i class="fas fa-plus me-1"></i> Add Option
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            questionsContainer.appendChild(questionCard);
+            const newQuestionCard = questionsContainer.lastChild;
+            newQuestionCard.querySelector('.question-type').addEventListener('change', function() {
+                const mediaSection = this.closest('.card-body').querySelector('.media-upload-section');
+                mediaSection.classList.toggle('d-none', this.value === 'text');
+            });
+            newQuestionCard.querySelector('.add-option-btn').addEventListener('click', function() {
+                addOption(this);
+            });
+            newQuestionCard.querySelector('.remove-question-btn').addEventListener('click', function() {
+                this.closest('.question-card').remove();
+                updateQuestionNumbers();
+            });
+            newQuestionCard.querySelectorAll('.remove-option-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const optionsContainer = this.closest('.options-container');
+                    if (optionsContainer.children.length <= 2) {
+                        showAlert('warning', 'Minimum 2 options required per question');
+                        return;
+                    }
+                    this.closest('.option-row').remove();
+                    updateOptionValues(optionsContainer, newQuestionCard.dataset.questionIndex);
+                });
+            });
+        });
+
+        function addOption(addOptionBtn) {
+            const optionsContainer = addOptionBtn.closest('.card-body').querySelector('.options-container');
+            const questionIndex = addOptionBtn.closest('.question-card').dataset.questionIndex;
+            const optionCount = optionsContainer.children.length + 1;
+            if (optionCount > 5) {
+                showAlert('warning', 'Maximum 5 options allowed per question');
+                return;
+            }
+            const optionRow = document.createElement('div');
+            optionRow.className = 'option-row';
+            optionRow.innerHTML = `
+                <div class="d-flex align-items-center mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input correct-answer" type="radio" name="correctAnswer${questionIndex}" value="${optionCount}" required>
+                        <label class="form-check-label">Correct Answer</label>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto remove-option-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <input type="text" class="form-control option-text" placeholder="Option ${optionCount}" required>
+            `;
+            optionsContainer.appendChild(optionRow);
+            optionRow.querySelector('.remove-option-btn').addEventListener('click', function() {
+                if (optionsContainer.children.length <= 2) {
+                    showAlert('warning', 'Minimum 2 options required per question');
+                    return;
+                }
+                this.closest('.option-row').remove();
+                updateOptionValues(optionsContainer, questionIndex);
+            });
+        }
+
+        function updateOptionValues(optionsContainer, questionIndex) {
+            const options = optionsContainer.querySelectorAll('.option-row');
+            options.forEach((option, index) => {
+                const optionNumber = index + 1;
+                const radio = option.querySelector('.correct-answer');
+                radio.value = optionNumber;
+                radio.name = `correctAnswer${questionIndex}`;
+                const input = option.querySelector('.option-text');
+                input.placeholder = `Option ${optionNumber}`;
+            });
+        }
+
+        function updateQuestionNumbers() {
+            const questions = document.querySelectorAll('.question-card');
+            questions.forEach((question, index) => {
+                const questionNumber = index + 1;
+                question.querySelector('.card-header h6').textContent = `Question ${questionNumber}`;
+                question.dataset.questionIndex = index;
+                const radios = question.querySelectorAll('.correct-answer');
+                radios.forEach(radio => {
+                    radio.name = `correctAnswer${index}`;
+                });
+                const optionsContainer = question.querySelector('.options-container');
+                updateOptionValues(optionsContainer, index);
+            });
+        }
+
+        document.getElementById('createChallengeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            try {
+                const formData = {
+                    title: document.getElementById('challengeTitle').value.trim(),
+                    description: document.getElementById('challengeDescription').value.trim(),
+                    duration: parseInt(document.getElementById('challengeDuration').value) * 60,
+                    active: document.getElementById('publishImmediately').checked,
+                    showResultsImmediately: document.getElementById('showResultsImmediately').checked,
+                    createdAt: Date.now(),
+                    questions: []
+                };
+                const questionCards = document.querySelectorAll('.question-card');
+                if (questionCards.length === 0) {
+                    showAlert('warning', 'Please add at least one question');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    return;
+                }
+                for (const questionCard of questionCards) {
+                    const questionData = {
+                        text: questionCard.querySelector('.question-text').value.trim(),
+                        options: [],
+                        correctAnswer: null
+                    };
+                    if (!questionData.text) {
+                        showAlert('warning', 'Please enter text for all questions');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        return;
+                    }
+                    const questionType = questionCard.querySelector('.question-type').value;
+                    const mediaUpload = questionCard.querySelector('.media-upload');
+                    if (questionType !== 'text' && mediaUpload && mediaUpload.files.length > 0) {
+                        const file = mediaUpload.files[0];
+                        if (file.size > 10 * 1024 * 1024) {
+                            showAlert('warning', 'Media file size must be less than 10MB');
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+                            return;
+                        }
+                        const fileRef = ref(storage, `challenges/${formData.title}/${Date.now()}_${file.name}`);
+                        await uploadBytes(fileRef, file);
+                        const fileUrl = await getDownloadURL(fileRef);
+                        let mediaType;
+                        if (questionType === 'text-image') mediaType = 'image';
+                        else if (questionType === 'text-video') mediaType = 'video';
+                        else if (questionType === 'text-multiple-images') mediaType = 'multiple-images';
+                        questionData.media = { type: mediaType, url: fileUrl };
+                    }
+                    const optionInputs = questionCard.querySelectorAll('.option-text');
+                    if (optionInputs.length < 2) {
+                        showAlert('warning', 'Each question must have at least 2 options');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        return;
+                    }
+                    optionInputs.forEach(input => {
+                        const optionText = input.value.trim();
+                        if (!optionText) {
+                            showAlert('warning', 'Please enter text for all options');
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+                            return;
+                        }
+                        questionData.options.push(optionText);
+                    });
+                    const correctAnswerRadio = questionCard.querySelector('.correct-answer:checked');
+                    if (!correctAnswerRadio) {
+                        showAlert('warning', 'Please select the correct answer for each question');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        return;
+                    }
+                    questionData.correctAnswer = parseInt(correctAnswerRadio.value);
+                    formData.questions.push(questionData);
+                }
+                const mode = e.target.dataset.mode;
+                const challengeId = e.target.dataset.challengeId;
+                if (mode === 'edit' && challengeId) {
+                    await updateDoc(doc(db, "challenges", challengeId), formData);
+                    showAlert('success', 'Challenge updated successfully');
+                } else {
+                    await addDoc(collection(db, "challenges"), formData);
+                    showAlert('success', 'Challenge created successfully');
+                    e.target.reset();
+                    document.getElementById('questionsContainer').innerHTML = '';
+                    addQuestionToForm({ text: '', options: ['', ''], correctAnswer: 1 }, 0);
+                }
+                loadChallenges();
+            } catch (error) {
+                console.error("Error saving challenge:", error);
+                showAlert('danger', 'Failed to save challenge: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+
+        loadChallenges();
+        if (document.getElementById('questionsContainer').children.length === 0) {
+            document.getElementById('addQuestionBtn').click();
+        }
+    </script>
+</body>
+</html>

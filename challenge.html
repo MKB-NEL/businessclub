@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESAFIOS | Challenges</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Script Sprouts" />
+    <!-- Note: Serve over http:// or https:// to avoid CORS issues (e.g., python -m http.server) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #4338ca;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: #3730a3;
+        }
+
+        main {
+            flex: 1;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .start-card, .progress-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 12px;
+            overflow: hidden;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 60px; /* Prevent overlap on mobile */
+        }
+
+        .modal-header {
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .btn-primary, .btn-refresh, .btn-ok {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .btn-primary:hover, .btn-refresh:hover, .btn-ok:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-refresh {
+            background: var(--info-color);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-refresh:hover {
+            background: #2563eb;
+        }
+
+        .btn-ok {
+            background: var(--success-color);
+            margin-top: 1rem;
+        }
+
+        .btn-ok:hover {
+            background: #16a34a;
+        }
+
+        .search-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .challenge-item {
+            padding: 0.5rem 0;
+        }
+
+        .challenge-description {
+            margin-top: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .question-container {
+            background: var(--light-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .media-container img, .media-container video {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--border-radius);
+            object-fit: contain;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .media-container .multiple-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .media-container .multiple-images img {
+            max-width: 200px;
+            max-height: 150px;
+        }
+
+        .media-fallback {
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .option-btn:hover {
+            background: #e2e8f0;
+            border-color: var(--primary-color);
+        }
+
+        .option-btn.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            animation: selectOption 0.2s ease;
+        }
+
+        .option-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .progress-bar-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: var(--border-radius);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            z-index: 20;
+        }
+
+        .timer {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--warning-color);
+            text-align: right;
+            padding: 0.5rem 1rem;
+        }
+
+        .results-container {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .results-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .results-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes selectOption {
+            0% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 576px) {
+            .modal-content {
+                width: 95%;
+                padding-bottom: 80px; /* Extra padding for mobile */
+            }
+
+            .modal-title {
+                font-size: 1.125rem;
+            }
+
+            .question-text {
+                font-size: 1.125rem;
+            }
+
+            .option-btn {
+                font-size: 0.875rem;
+            }
+
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .search-container {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1 class="fs-4 fw-bold">DESAFIOS CH.</h1>
+        <a href="home.html" class="back-btn">Back to Home</a>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="start-card">
+            <h2 class="fs-3 fw-bold mb-3"><i class="fas fa-trophy me-2"></i>Available Challenges</h2>
+            <p class="text-muted mb-4">Select a challenge to participate!<br>Click th refresh button to get other Challenges.</p>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search challenges by title..." aria-label="Search challenges">
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fs-5 fw-bold">Suggested Challenges</h4>
+                <button class="btn-refresh" id="refreshChallengesBtn" title="Refresh Challenges" aria-label="Refresh Challenges"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <div id="suggestedChallenges">
+                <p class="text-muted">Loading challenges...</p>
+            </div>
+            <div id="searchResults" class="mt-4" aria-live="polite">
+                <!-- Search results will be displayed here -->
+            </div>
+        </div>
+
+        <div class="progress-card">
+            <h3 class="fs-4 fw-bold mb-3"><i class="fas fa-chart-line me-2"></i>Your Progress</h3>
+            <div id="totalProgress" class="mb-3">
+                <p class="text-muted">Loading total progress...</p>
+            </div>
+            <a href="leaderboard.html" class="btn-primary mt-4"><i class="fas fa-ranking-star me-2"></i>Leaderboard</a>
+        </div>
+    </main>
+
+    <!-- Challenge Modal -->
+    <div class="modal" id="challengeModal" aria-hidden="true" role="dialog" aria-labelledby="challengeModalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="challengeModalTitle">Challenge <button class="btn btn-link p-0 ms-2" id="toggleDescriptionBtn" title="Show Description" aria-label="Toggle Description">😉</button></div>
+                <button class="close-modal" id="closeChallengeModal" aria-label="Close Modal">×</button>
+            </div>
+            <div class="timer" id="challengeTimer" aria-live="polite">00:00</div>
+            <div class="modal-body" id="challengeModalBody">
+                <!-- Challenge description or questions will be loaded here -->
+            </div>
+            <div class="navigation-buttons" id="navigationButtons">
+                <button class="btn btn-primary" id="startChallengeBtnModal">Start Challenge</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" aria-live="polite" aria-busy="true">
+        <div class="spinner" aria-hidden="true"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, increment, runTransaction, limit } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAcnCKmcXcgUBHOGGEj8dizh2ybY7iQ7JI",
+            authDomain: "script-sprouts.firebaseapp.com",
+            databaseURL: "https://script-sprouts-default-rtdb.firebaseio.com",
+            projectId: "script-sprouts",
+            storageBucket: "script-sprouts.firebasestorage.app",
+            messagingSenderId: "223432338173",
+            appId: "1:223432338173:web:549ca36657ea0b38b12c94",
+            measurementId: "G-ZMCS394K9H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global Variables
+        let currentUser = null;
+        let currentChallenge = null;
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let timerInterval = null;
+        let timeRemaining = 0;
+        let descriptionVisible = true;
+        let completedChallengeIdsCache = null;
+
+        // DOM Elements
+        const refreshChallengesBtn = document.getElementById('refreshChallengesBtn');
+        const searchInput = document.getElementById('searchInput');
+        const suggestedChallenges = document.getElementById('suggestedChallenges');
+        const searchResults = document.getElementById('searchResults');
+        const challengeModal = document.getElementById('challengeModal');
+        const challengeModalTitle = document.getElementById('challengeModalTitle');
+        const challengeModalBody = document.getElementById('challengeModalBody');
+        const closeChallengeModal = document.getElementById('closeChallengeModal');
+        const navigationButtons = document.getElementById('navigationButtons');
+        const challengeTimer = document.getElementById('challengeTimer');
+        const totalProgress = document.getElementById('totalProgress');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Debounce Function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Authentication State
+        onAuthStateChanged(auth, async (user) => {
+            showLoading(true);
+            try {
+                if (user) {
+                    currentUser = user;
+                    await initializeUser();
+                    await loadUserProgress();
+                    await loadSuggestedChallenges();
+                    // Cache completed challenge IDs on login
+                    completedChallengeIdsCache = await getCompletedChallengeIds();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Auth state error:', error);
+                showAlert('danger', 'Authentication error: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Initialize User
+        async function initializeUser() {
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userSnap = await getDoc(userRef);
+                if (!userSnap.exists()) {
+                    await setDoc(userRef, {
+                        uid: currentUser.uid,
+                        displayName: currentUser.displayName || currentUser.email.split('@')[0],
+                        email: currentUser.email,
+                        totalMarks: 0,
+                        challengesCompleted: 0,
+                        lastChallenge: null,
+                        createdAt: Date.now()
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing user:', error);
+                throw new Error('Failed to initialize user: ' + error.message);
+            }
+        }
+
+        // Load User Progress
+        async function loadUserProgress() {
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    totalProgress.innerHTML = `
+                        <p><strong>Total Marks:</strong> ${userData.totalMarks || 0}</p>
+                        <p><strong>Challenges Completed:</strong> ${userData.challengesCompleted || 0}</p>
+                    `;
+                } else {
+                    totalProgress.innerHTML = `
+                        <p><strong>Total Marks:</strong> 0</p>
+                        <p><strong>Challenges Completed:</strong> 0</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+                showAlert('danger', 'Failed to load progress: ' + error.message);
+            }
+        }
+
+        // Load Suggested Challenges
+        async function loadSuggestedChallenges() {
+            try {
+                showLoading(true);
+                const completedChallengeIds = completedChallengeIdsCache || await getCompletedChallengeIds();
+                const challengesRef = collection(db, 'challenges');
+                const q = query(challengesRef, where('active', '==', true), limit(10));
+                const querySnapshot = await getDocs(q);
+                let availableChallenges = [];
+
+                querySnapshot.forEach(doc => {
+                    const challenge = doc.data();
+                    challenge.id = doc.id;
+                    if (!completedChallengeIds.includes(challenge.id)) {
+                        availableChallenges.push(challenge);
+                    }
+                });
+
+                if (availableChallenges.length === 0) {
+                    suggestedChallenges.innerHTML = '<p class="text-muted">No challenges available.</p>';
+                    return;
+                }
+
+                const shuffled = availableChallenges.sort(() => 0.5 - Math.random());
+                const selectedChallenges = shuffled.slice(0, Math.min(3, shuffled.length));
+                suggestedChallenges.innerHTML = '<ul class="list-group">';
+                selectedChallenges.forEach(challenge => {
+                    suggestedChallenges.innerHTML += `
+                        <li class="list-group-item challenge-item d-flex justify-content-between align-items-center">
+                            <span>${challenge.title}</span>
+                            <button class="btn btn-primary btn-sm start-challenge-btn" data-challenge-id="${challenge.id}" aria-label="Start ${challenge.title}">Start</button>
+                        </li>
+                    `;
+                });
+                suggestedChallenges.innerHTML += '</ul>';
+            } catch (error) {
+                console.error('Error loading challenges:', error);
+                showAlert('danger', 'Failed to load challenges: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Search Challenges
+        async function searchChallenges(searchTerm) {
+            try {
+                showLoading(true);
+                searchTerm = searchTerm.trim().toLowerCase();
+                if (!searchTerm) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                const completedChallengeIds = completedChallengeIdsCache || await getCompletedChallengeIds();
+                const challengesRef = collection(db, 'challenges');
+                const q = query(challengesRef, where('active', '==', true), limit(50));
+                const querySnapshot = await getDocs(q);
+                let availableChallenges = [];
+
+                querySnapshot.forEach(doc => {
+                    const challenge = doc.data();
+                    challenge.id = doc.id;
+                    if (!completedChallengeIds.includes(challenge.id)) {
+                        availableChallenges.push(challenge);
+                    }
+                });
+
+                const matchedChallenges = availableChallenges
+                    .map(challenge => {
+                        const title = challenge.title.toLowerCase();
+                        const keywords = searchTerm.split(/\s+/);
+                        const matchCount = keywords.reduce((count, keyword) => {
+                            return count + (title.includes(keyword) ? 1 : 0);
+                        }, 0);
+                        return { challenge, matchCount };
+                    })
+                    .filter(item => item.matchCount > 0)
+                    .sort((a, b) => b.matchCount - a.matchCount || a.challenge.title.localeCompare(b.challenge.title))
+                    .map(item => item.challenge);
+
+                if (matchedChallenges.length === 0) {
+                    searchResults.innerHTML = '<p class="text-muted">No matching challenges found.</p>';
+                    return;
+                }
+
+                searchResults.innerHTML = `
+                    <h4 class="fs-5 fw-bold mb-3">Search Results</h4>
+                    <ul class="list-group">
+                        ${matchedChallenges.map(challenge => `
+                            <li class="list-group-item challenge-item d-flex justify-content-between align-items-center">
+                                <span>${challenge.title}</span>
+                                <button class="btn btn-primary btn-sm start-challenge-btn" data-challenge-id="${challenge.id}" aria-label="Start ${challenge.title}">Start</button>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                console.error('Error searching challenges:', error);
+                showAlert('danger', 'Failed to search challenges: ' + error.message);
+                searchResults.innerHTML = '<p class="text-muted">Error loading search results.</p>';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Debounced Search
+        const debouncedSearch = debounce((searchTerm) => {
+            console.log('Searching for:', searchTerm);
+            searchChallenges(searchTerm);
+        }, 300);
+
+        // Search Input Handler
+        searchInput.addEventListener('input', (e) => {
+            debouncedSearch(e.target.value);
+        });
+
+        // Get Completed Challenge IDs
+        async function getCompletedChallengeIds() {
+            try {
+                const resultsRef = collection(db, 'challengeResults');
+                const q = query(resultsRef, where('userId', '==', currentUser.uid), limit(100));
+                const querySnapshot = await getDocs(q);
+                return querySnapshot.docs.map(doc => doc.data().challengeId);
+            } catch (error) {
+                console.error('Error fetching completed challenges:', error);
+                return [];
+            }
+        }
+
+        // Start Challenge
+        async function startChallenge(challengeId) {
+            try {
+                console.log('Starting challenge:', challengeId);
+                showLoading(true);
+                const hasParticipated = await checkUserParticipation(challengeId);
+                if (hasParticipated) {
+                    showAlert('warning', 'You have already completed this challenge.');
+                    return;
+                }
+
+                const challengeRef = doc(db, 'challenges', challengeId);
+                const challengeSnap = await getDoc(challengeRef);
+                if (!challengeSnap.exists()) {
+                    showAlert('danger', 'Challenge not found.');
+                    return;
+                }
+
+                currentChallenge = challengeSnap.data();
+                currentChallenge.id = challengeId;
+                if (!currentChallenge.questions || !Array.isArray(currentChallenge.questions) || currentChallenge.questions.length === 0) {
+                    showAlert('danger', 'Challenge has no valid questions.');
+                    return;
+                }
+
+                currentChallenge.questions = [...currentChallenge.questions]
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, Math.min(5, currentChallenge.questions.length));
+
+                currentQuestionIndex = 0;
+                userAnswers = Array(currentChallenge.questions.length).fill(null);
+                timeRemaining = currentChallenge.duration || 300;
+                descriptionVisible = true;
+
+                challengeModalTitle.innerHTML = `${currentChallenge.title} <button class="btn btn-link p-0 ms-2 toggle-description-btn" title="Show Description" aria-label="Toggle Description">😉</button>`;
+                challengeModalBody.innerHTML = `
+                    <div class="challenge-description">
+                        <h4 class="fs-5 fw-bold">Description</h4>
+                        <p>${currentChallenge.description || 'No description available.'}</p>
+                    </div>
+                `;
+                navigationButtons.innerHTML = `
+                    <button class="btn btn-primary start-challenge-modal" aria-label="Start Challenge">Start Challenge</button>
+                `;
+                challengeModal.style.display = 'flex';
+                challengeModal.setAttribute('aria-hidden', 'false');
+                challengeTimer.textContent = '00:00';
+                console.log('Challenge modal opened');
+            } catch (error) {
+                console.error('Error starting challenge:', error);
+                showAlert('danger', 'Failed to start challenge: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Unified Event Delegation
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            if (target.classList.contains('start-challenge-btn')) {
+                const challengeId = target.getAttribute('data-challenge-id');
+                console.log('Start challenge button clicked:', challengeId);
+                startChallenge(challengeId);
+            } else if (target.classList.contains('toggle-description-btn')) {
+                console.log('Toggle description button clicked');
+                toggleDescription();
+            } else if (target.classList.contains('start-challenge-modal')) {
+                console.log('Start challenge modal button clicked');
+                startChallengeHandler();
+            } else if (target.classList.contains('prev-question-btn')) {
+                console.log('Previous button clicked');
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    displayQuestion(currentQuestionIndex);
+                }
+            } else if (target.classList.contains('next-question-btn')) {
+                console.log('Next button clicked');
+                if (currentQuestionIndex < currentChallenge.questions.length - 1) {
+                    currentQuestionIndex++;
+                    displayQuestion(currentQuestionIndex);
+                }
+            } else if (target.classList.contains('submit-challenge-btn')) {
+                console.log('Submit button clicked');
+                submitChallenge();
+            } else if (target.classList.contains('ok-btn')) {
+                console.log('OK button clicked');
+                challengeModal.style.display = 'none';
+                challengeModal.setAttribute('aria-hidden', 'true');
+                resetChallengeState();
+                loadUserProgress();
+                loadSuggestedChallenges();
+            } else if (target.id === 'refreshChallengesBtn') {
+                console.log('Refresh challenges button clicked');
+                loadSuggestedChallenges();
+            } else if (target.id === 'closeChallengeModal') {
+                console.log('Close modal button clicked');
+                if (confirm('Are you sure you want to exit the challenge? Your progress will be lost.')) {
+                    challengeModal.style.display = 'none';
+                    challengeModal.setAttribute('aria-hidden', 'true');
+                    resetChallengeState();
+                }
+            }
+        });
+
+        // Start Challenge Handler
+        function startChallengeHandler() {
+            if (!currentChallenge) {
+                showAlert('danger', 'No challenge loaded.');
+                return;
+            }
+            descriptionVisible = false;
+            updateTimerDisplay();
+            startTimer();
+            navigationButtons.innerHTML = `
+                <button class="btn btn-primary prev-question-btn" ${currentQuestionIndex === 0 ? 'disabled' : ''} aria-label="Previous Question">Previous</button>
+                <button class="btn btn-primary next-question-btn" style="display: ${currentQuestionIndex === currentChallenge.questions.length - 1 ? 'none' : 'inline-block'}" aria-label="Next Question">Next</button>
+                <button class="btn btn-primary submit-challenge-btn" style="display: ${currentQuestionIndex === currentChallenge.questions.length - 1 ? 'inline-block' : 'none'}" aria-label="Submit Challenge">Submit</button>
+            `;
+            displayQuestion(currentQuestionIndex);
+        }
+
+        // Toggle Description
+        function toggleDescription() {
+            if (!currentChallenge) return;
+            descriptionVisible = !descriptionVisible;
+            console.log('Toggling description:', descriptionVisible);
+            if (descriptionVisible) {
+                challengeModalBody.innerHTML = `
+                    <div class="challenge-description">
+                        <h4 class="fs-5 fw-bold">Description</h4>
+                        <p>${currentChallenge.description || 'No description available.'}</p>
+                    </div>
+                `;
+            } else {
+                displayQuestion(currentQuestionIndex);
+            }
+        }
+
+        // Check User Participation
+        async function checkUserParticipation(challengeId) {
+            if (!challengeId) return false;
+            try {
+                const resultsRef = collection(db, 'challengeResults');
+                const q = query(resultsRef, where('userId', '==', currentUser.uid), where('challengeId', '==', challengeId), limit(1));
+                const querySnapshot = await getDocs(q);
+                return !querySnapshot.empty;
+            } catch (error) {
+                console.error('Error checking participation:', error);
+                return false;
+            }
+        }
+
+        // Display Question
+        function displayQuestion(index) {
+            if (!currentChallenge || !currentChallenge.questions || !currentChallenge.questions[index]) {
+                showAlert('danger', 'Invalid question data.');
+                return;
+            }
+            console.log('Displaying question:', index);
+            const question = currentChallenge.questions[index];
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            const progressPercentage = (answeredCount / currentChallenge.questions.length) * 100;
+            challengeModalBody.innerHTML = `
+                <div class="progress-bar-container">
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: ${progressPercentage}%" aria-valuenow="${progressPercentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p class="text-muted small mt-1">Question ${index + 1} of ${currentChallenge.questions.length}</p>
+                </div>
+                <div class="question-container" role="region" aria-label="Question ${index + 1}">
+                    <div class="question-text">${index + 1}. ${question.text}</div>
+                    ${question.media ? `
+                        <div class="media-container">
+                            ${question.media.type === 'image' ? 
+                                `<img src="${question.media.url}" alt="Question media" loading="lazy">` :
+                                question.media.type === 'video' ?
+                                `<video src="${question.media.url}" controls loading="lazy"></video>` :
+                                question.media.type === 'multiple-images' ?
+                                `<div class="multiple-images">${question.media.url.map(url => `<img src="${url}" alt="Question media" loading="lazy">`).join('')}</div>` :
+                                '<p class="media-fallback">Unsupported media type.</p>'
+                            }
+                        </div>
+                    ` : '<p class="media-fallback">No media available.</p>'}
+                    <div class="options-container" role="radiogroup" aria-label="Answer options for question ${index + 1}">
+                        ${question.options.map((option, optIndex) => `
+                            <button class="option-btn" data-option="${optIndex + 1}" role="radio" aria-checked="${userAnswers[index] === optIndex + 1 ? 'true' : 'false'}" tabindex="0">
+                                ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Update navigation buttons
+            navigationButtons.innerHTML = `
+                <button class="btn btn-primary prev-question-btn" ${index === 0 ? 'disabled' : ''} aria-label="Previous Question">Previous</button>
+                <button class="btn btn-primary next-question-btn" style="display: ${index === currentChallenge.questions.length - 1 ? 'none' : 'inline-block'}" aria-label="Next Question">Next</button>
+                <button class="btn btn-primary submit-challenge-btn" style="display: ${index === currentChallenge.questions.length - 1 ? 'inline-block' : 'none'}" aria-label="Submit Challenge">Submit</button>
+            `;
+
+            // Highlight selected answer
+            if (userAnswers[index]) {
+                const selectedBtn = challengeModalBody.querySelector(`.option-btn[data-option="${userAnswers[index]}"]`);
+                if (selectedBtn) {
+                    selectedBtn.classList.add('selected');
+                    selectedBtn.setAttribute('aria-checked', 'true');
+                }
+            }
+
+            // Option button listeners
+            challengeModalBody.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const option = parseInt(btn.getAttribute('data-option'));
+                    console.log('Option selected:', option, 'for question:', index);
+                    userAnswers[index] = option;
+                    challengeModalBody.querySelectorAll('.option-btn').forEach(b => {
+                        b.classList.remove('selected');
+                        b.setAttribute('aria-checked', 'false');
+                    });
+                    btn.classList.add('selected');
+                    btn.setAttribute('aria-checked', 'true');
+                });
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        btn.click();
+                    }
+                });
+            });
+        }
+
+        // Timer
+        function startTimer() {
+            console.log('Starting timer');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining = Math.max(0, timeRemaining - 1);
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitChallenge();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            challengeTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Submit Challenge
+        async function submitChallenge() {
+            console.log('Submitting challenge');
+            clearInterval(timerInterval);
+            try {
+                showLoading(true);
+                const hasParticipated = await checkUserParticipation(currentChallenge.id);
+                if (hasParticipated) {
+                    showAlert('warning', 'Challenge already completed.');
+                    resetChallengeState();
+                    return;
+                }
+
+                let score = 0;
+                const answers = userAnswers.map((selected, index) => {
+                    const question = currentChallenge.questions[index];
+                    const isCorrect = selected === question.correctAnswer;
+                    if (isCorrect) score += 100 / currentChallenge.questions.length;
+                    return {
+                        questionText: question.text,
+                        selectedOption: selected ? question.options[selected - 1] : 'None',
+                        correctOption: question.options[question.correctAnswer - 1],
+                        isCorrect,
+                        timeSpent: Math.floor((currentChallenge.duration || 300) / currentChallenge.questions.length)
+                    };
+                });
+
+                const resultData = {
+                    userId: currentUser.uid,
+                    userName: currentUser.displayName || currentUser.email.split('@')[0],
+                    challengeId: currentChallenge.id,
+                    challengeTitle: currentChallenge.title,
+                    score: Math.round(score),
+                    timeSpent: (currentChallenge.duration || 300) - timeRemaining,
+                    completedAt: Date.now(),
+                    answers,
+                    keywordsUsed: []
+                };
+
+                await runTransaction(db, async (transaction) => {
+                    const userRef = doc(db, 'users', currentUser.uid);
+                    const challengeRef = doc(db, 'challenges', currentChallenge.id);
+                    const userSnap = await transaction.get(userRef);
+                    const challengeSnap = await transaction.get(challengeRef);
+
+                    if (!userSnap.exists() || !challengeSnap.exists()) {
+                        throw new Error('User or challenge data not found.');
+                    }
+
+                    const resultRef = doc(collection(db, 'challengeResults'));
+                    transaction.set(resultRef, resultData);
+                    const doneRef = doc(collection(db, 'doneChallenges'));
+                    transaction.set(doneRef, resultData);
+                    transaction.update(userRef, {
+                        totalMarks: increment(resultData.score),
+                        challengesCompleted: increment(1),
+                        lastChallenge: {
+                            challengeId: currentChallenge.id,
+                            title: currentChallenge.title,
+                            score: resultData.score,
+                            completedAt: resultData.completedAt
+                        }
+                    });
+                    transaction.update(challengeRef, { participantCount: increment(1) });
+                });
+
+                // Refresh completed challenge IDs cache after submission
+                completedChallengeIdsCache = await getCompletedChallengeIds();
+
+                if (currentChallenge.showResultsImmediately) {
+                    displayResults(resultData);
+                } else {
+                    challengeModalBody.innerHTML = `
+                        <div class="results-container">
+                            <h3 class="fs-4">Challenge Submitted</h3>
+                            <p class="results-details">Thank you for participating!</p>
+                            <button class="btn btn-ok ok-btn" aria-label="Close Results">OK</button>
+                        </div>
+                    `;
+                    navigationButtons.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error submitting challenge:', error);
+                showAlert('danger', 'Failed to submit challenge: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display Results
+        function displayResults(resultData) {
+            challengeModalBody.innerHTML = `
+                <div class="results-container">
+                    <div class="results-score">Your Score: ${resultData.score}%</div>
+                    <div class="results-details">
+                        <p>Time Taken: ${Math.floor(resultData.timeSpent / 60)}:${(resultData.timeSpent % 60).toString().padStart(2, '0')}</p>
+                        <h4 class="fs-5 mt-3">Answer Details</h4>
+                        ${resultData.answers.map((answer, index) => `
+                            <div class="card mb-2 ${answer.isCorrect ? 'border-success' : 'border-danger'}">
+                                <div class="card-header ${answer.isCorrect ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10'}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Question ${index + 1}</span>
+                                        <span>
+                                            ${answer.isCorrect ? 
+                                                '<i class="fas fa-check-circle text-success"></i> Correct' : 
+                                                '<i class="fas fa-times-circle text-danger"></i> Incorrect'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">${answer.questionText}</p>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Selected:</small>
+                                            <p class="mb-0">${answer.selectedOption}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Correct Answer:</small>
+                                            <p class="mb-0">${answer.correctOption}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button class="btn btn-ok ok-btn" aria-label="Close Results">OK</button>
+                    </div>
+                </div>
+            `;
+            navigationButtons.innerHTML = '';
+        }
+
+        // Reset Challenge State
+        function resetChallengeState() {
+            currentChallenge = null;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            timeRemaining = 0;
+            descriptionVisible = true;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            challengeModal.style.display = 'none';
+            challengeModal.setAttribute('aria-hidden', 'true');
+        }
+
+        // Show Alert
+        function showAlert(type, message) {
+            console.log(`Alert: ${type} - ${message}`);
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show fixed-top mx-auto mt-3`;
+            alert.style.maxWidth = '500px';
+            alert.setAttribute('role', 'alert');
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alert);
+            const bsAlert = new bootstrap.Alert(alert);
+            setTimeout(() => bsAlert.close(), 5000);
+        }
+
+        // Show Loading
+        function showLoading(show) {
+            console.log('Loading:', show);
+            loadingOverlay.style.display = show ? 'flex' : 'none';
+            loadingOverlay.setAttribute('aria-busy', show ? 'true' : 'false');
+        }
+    </script>
+</body>
+</html>
